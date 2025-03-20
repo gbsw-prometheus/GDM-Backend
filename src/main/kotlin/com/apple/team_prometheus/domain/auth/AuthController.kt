@@ -1,0 +1,36 @@
+package com.apple.team_prometheus.domain.auth
+
+import io.swagger.v3.oas.annotations.tags.Tag
+import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RestController
+
+
+@RestController
+@RequestMapping(value = ["/auth"])
+@Tag(name = "Auth")
+class AuthController(val authService: AuthService) {
+
+    @PostMapping(value = ["/login"])
+    fun login(
+        @RequestBody loginDto: AuthLoginDto.Request
+    ): ResponseEntity<AuthLoginDto.Response> {
+
+        return ResponseEntity.ok(
+            authService.userLogin(loginDto)
+        )
+    }
+
+    @PostMapping(value = ["/join"])
+    fun join(
+        @RequestBody joinDto: AuthJoinDto.Request
+    ): ResponseEntity<AuthJoinDto.Response> {
+
+        return  ResponseEntity.ok(
+            authService.userJoin(joinDto)
+        )
+    }
+
+}
