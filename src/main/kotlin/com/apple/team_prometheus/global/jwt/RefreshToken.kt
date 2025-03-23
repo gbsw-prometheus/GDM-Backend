@@ -11,11 +11,11 @@ import jakarta.persistence.Id
 data class RefreshToken(
     @field:Column(
         updatable = true, nullable = false
-    ) private val userId: Long,
+    ) private val userId: Long = 1,
 
     @field:Column(
         nullable = false
-    ) private var refreshToken: String
+    ) private var refreshToken: String = ""
 
 ) {
 
