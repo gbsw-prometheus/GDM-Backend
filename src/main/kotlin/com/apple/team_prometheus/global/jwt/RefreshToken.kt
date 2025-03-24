@@ -19,6 +19,7 @@ data class RefreshToken(
 
 ) {
 
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(updatable = false)
@@ -29,5 +30,7 @@ data class RefreshToken(
     fun setRefreshToken(newRefreshToken: String) {
         this.refreshToken = newRefreshToken
     }
+
+    constructor() : this(0L, "")
 
 }

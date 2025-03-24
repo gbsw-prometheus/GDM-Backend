@@ -1,8 +1,10 @@
 package com.apple.team_prometheus.domain.auth
 
-import com.apple.team_prometheus.global.exception.Exceptions
 import com.apple.team_prometheus.global.exception.ErrorCode
+import com.apple.team_prometheus.global.exception.Exceptions
 import com.apple.team_prometheus.global.jwt.*
+import io.jsonwebtoken.Claims
+import io.jsonwebtoken.ExpiredJwtException
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -44,11 +46,11 @@ class AuthService(
 
         val user: AuthUser? = authRepository.findById(loginDto.id)
             .orElseThrow {
-                Exceptions(ErrorCode.USER_NOT_FOUND)
+                Exceptions(errorCode = ErrorCode.USER_NOT_FOUND)
             }
 
         if (!passwordEncoder.matches(loginDto.password, user!!.password)) {
-            throw Exceptions(ErrorCode.INVALID_PASSWORD)
+            throw Exceptions(errorCode = ErrorCode.INVALID_PASSWORD)
         }
 
 
@@ -61,8 +63,6 @@ class AuthService(
 
 
     private fun createAccessToken(user: AuthUser, refreshToken: String?): AccessToken.Response {
-        val tokenDuration: Duration = Duration.ofMinutes(jwtProperties.duration)
-        val refreshDuration: Duration = Duration.ofMinutes(jwtProperties.refreshDuration.toLong())
 
         var savedRefreshToken: RefreshToken? = jwtRepository.findById(user.id)
             .orElse(null)
@@ -75,16 +75,46 @@ class AuthService(
             )
         }
 
+        val tokenDuration: Duration = Duration.ofMinutes(jwtProperties.duration)
+        val refreshDuration: Duration = Duration.ofMinutes(jwtProperties.refreshDuration)
         val accessToken = jwtProvider.generateToken(user, tokenDuration, true)
-        val newRefreshToken = jwtProvider.generateToken(user, refreshDuration, false)
 
-        if (savedRefreshToken == null) {
+
+        val finalRefreshToken = if (savedRefreshToken == null) {
+            val newRefreshToken = jwtProvider.generateToken(user, Duration.ofMinutes(jwtProperties.refreshDuration), false)
             savedRefreshToken = RefreshToken(user.id, newRefreshToken)
+            jwtRepository.save(savedRefreshToken)
+            newRefreshToken
         } else {
-            savedRefreshToken.setRefreshToken(newRefreshToken)
+            savedRefreshToken.getRefreshToken()
         }
 
-        jwtRepository.save(savedRefreshToken)
-        return AccessToken.Response("ok", accessToken, newRefreshToken)
+        return AccessToken.Response("ok", accessToken, finalRefreshToken)
     }
+
+    fun refreshAccessToken(request: CreateAccessTokenByRefreshToken): AccessToken.Response {
+        try {
+
+            val claims: Claims = jwtProvider.getClaims(request.refreshToken)
+            val type: String = claims.get("type").toString()
+            if (type == null || !type.equals("Refresh")) {
+                throw Exceptions(errorCode = ErrorCode.INVALID_TOKEN)
+            }
+
+            val user: AuthUser = authRepository.findByName(claims.subject)
+                .orElseThrow{
+                    Exceptions(errorCode = ErrorCode.USER_NOT_FOUND)
+                }!!
+
+            return createAccessToken(user, request.refreshToken)
+        } catch (e: ExpiredJwtException) {
+
+            return AccessToken.Response(e.message, null, null)
+        } catch (e: Exception) {
+
+            return AccessToken.Response(e.message, null, null)
+        }
+    }
+
+
 }

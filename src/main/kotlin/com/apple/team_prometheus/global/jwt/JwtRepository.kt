@@ -7,5 +7,5 @@ import java.util.*
 
 @Repository
 interface JwtRepository: JpaRepository<RefreshToken, Long> {
-    override fun findById(id: Long): Optional<RefreshToken>
+
 }

@@ -33,7 +33,7 @@ class TokenExceptionFilter : OncePerRequestFilter() {
         response.status = HttpStatus.UNAUTHORIZED.value()
         response.contentType = "application/json; charset=UTF-8"
 
-        val jwtExceptionResponse: TokenErrorResponse = TokenErrorResponse(throwable.message)
+        val jwtExceptionResponse = TokenErrorResponse(throwable.message)
         val mapper = ObjectMapper()
 
         response.writer.write(mapper.writeValueAsString(jwtExceptionResponse))
