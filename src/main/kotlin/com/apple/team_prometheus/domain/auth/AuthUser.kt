@@ -2,7 +2,7 @@ package com.apple.team_prometheus.domain.auth
 
 import jakarta.persistence.*
 
-@Entity
+@Entity(name = "users")
 data class AuthUser(
     @Id
     @Column(nullable = false)
@@ -17,4 +17,7 @@ data class AuthUser(
     @Column(nullable = false)
     var roomNum: Int
 
-)
+) {
+    constructor() : this(0L, "", "", 0)
+
+}

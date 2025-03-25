@@ -3,7 +3,7 @@ package com.apple.team_prometheus.global.jwt
 class AccessToken {
 
     data class Response (
-        val result: String,
+        val result: String?,
         val token: String?,
         val refreshToken: String?
     )
