@@ -34,14 +34,16 @@ class SecurityConfig(
                         val remoteAddr = (request as HttpServletRequest).remoteAddr
                         val allowedIp = "172.16.1.250"
                         AuthorizationDecision(remoteAddr == allowedIp)
-                    }.anyRequest().permitAll()
+                    }
+                    .requestMatchers("/auth/join").hasRole("TEACHER")
                     .requestMatchers(
-                    AntPathRequestMatcher("/auth/**"),
-                    AntPathRequestMatcher("/swagger-ui.html"),
-                    AntPathRequestMatcher("/swagger-ui/**"),
-                    AntPathRequestMatcher("/v3/api-docs/**")
-                ).permitAll()
-                    .anyRequest().authenticated()
+                        AntPathRequestMatcher("/auth/login"),
+                        AntPathRequestMatcher("/auth/login/token"),
+                        AntPathRequestMatcher("/swagger-ui.html"),
+                        AntPathRequestMatcher("/swagger-ui/**"),
+                        AntPathRequestMatcher("/v3/api-docs/**")
+                    ).permitAll()
+                        .anyRequest().authenticated()
             }
             .addFilterBefore(tokenAuthenticationFilter, UsernamePasswordAuthenticationFilter::class.java)
             .addFilterBefore(tokenExceptionFilter, TokenAuthenticationFilter::class.java)

@@ -16,8 +16,6 @@ import java.io.IOException
 
 @Component
 class TokenAuthenticationFilter(val tokenProvider: TokenProvider) : OncePerRequestFilter() {
-
-
     @Throws(ServletException::class, IOException::class)
     override fun doFilterInternal(
         request: HttpServletRequest,
@@ -27,19 +25,35 @@ class TokenAuthenticationFilter(val tokenProvider: TokenProvider) : OncePerReque
         val HEADER = "Authorization"
         val authorizationHeader = request.getHeader(HEADER)
         val token = getAccessToken(authorizationHeader)
+        println("TokenAuthenticationFilter: Processing ${request.requestURI}")
+        println("Authorization Header: $authorizationHeader")
+        println("Extracted Token: $token")
 
         try {
             if (token != null) {
-                val authentication: Authentication = tokenProvider!!.getAuthentication(token)
+                println("TokenAuthenticationFilter: Validating token")
+                val authentication: Authentication = tokenProvider.getAuthentication(token)
+                println("Authentication: $authentication")
                 SecurityContextHolder.getContext().authentication = authentication
+            } else {
+                println("TokenAuthenticationFilter: No token provided")
             }
             filterChain.doFilter(request, response)
         } catch (e: IllegalArgumentException) {
+
+            println("TokenAuthenticationFilter: Invalid Token - ${e.message}")
             throw JwtException("Invalid Token. 유효하지 않은 토큰")
+
         } catch (e: ExpiredJwtException) {
-            throw JwtException("Expired token, 토큰 기한 만료" + e.message)
+
+            println("TokenAuthenticationFilter: Expired Token - ${e.message}")
+            throw JwtException("Expired token, 토큰 기한 만료")
+
         } catch (e: SignatureException) {
+
+            println("TokenAuthenticationFilter: Signature Failed - ${e.message}")
             throw JwtException("Signature Failed. 인증실패")
+
         }
     }
 

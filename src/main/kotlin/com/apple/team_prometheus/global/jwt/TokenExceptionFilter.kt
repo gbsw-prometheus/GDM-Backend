@@ -21,9 +21,11 @@ class TokenExceptionFilter : OncePerRequestFilter() {
         response: HttpServletResponse,
         filterChain: FilterChain
     ) {
+        println("TokenExceptionFilter: Processing ${request.requestURI}")
         try {
             filterChain.doFilter(request, response)
         } catch (e: JwtException) {
+            println("TokenExceptionFilter: Exception caught - ${e.message}")
             setErrorResponse(response, e)
         }
     }
