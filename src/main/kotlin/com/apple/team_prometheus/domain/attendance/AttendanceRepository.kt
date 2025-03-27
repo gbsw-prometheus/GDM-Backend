@@ -9,11 +9,11 @@ import java.time.LocalDateTime
 @Repository
 interface AttendanceRepository: JpaRepository<Attendance, Long> {
 
-    fun findByUserAndCheckTimeBetween(
+
+    fun findByUserAndAttendanceTimeAndCheckTimeBetween(
         user: AuthUser,
+        attendanceTime: AttendanceTime,
         start: LocalDateTime,
         end: LocalDateTime
     ): List<Attendance>
-
-    fun findByCheckTimeBetween(start: LocalDateTime, end: LocalDateTime): List<Attendance>
 }
