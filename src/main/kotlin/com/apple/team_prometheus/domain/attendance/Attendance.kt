@@ -25,10 +25,7 @@ data class Attendance (
     val checkTime: LocalDateTime,
 
     @Column(nullable = false)
-    val status: Status,
-
-    @Column(nullable = false)
-    val attendanceTime: AttendanceTime
+    val status: Status
 ) {
-    constructor(): this(0L, AuthUser(), LocalDateTime.now(),Status.NOT_ATTENDING, AttendanceTime.LUNCH)
+    constructor(): this(0L, AuthUser(), LocalDateTime.now(),Status.NOT_ATTENDING)
 }

@@ -9,6 +9,7 @@ import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.Duration
+import java.time.Year
 
 
 @Service
@@ -20,19 +21,20 @@ class AuthService(
     private val jwtRepository: JwtRepository) {
 
 
-    fun userJoin(joinDto: AuthJoinDto.Request): AuthJoinDto.Response {
-
-        if(authRepository.existsById(joinDto.id)) {
-            throw Exceptions(ErrorCode.DUPLICATED_ID)
-        }
+    fun userJoin(
+        joinDto: AuthJoinDto.Request
+    ): AuthJoinDto.Response {
 
         val newUser: AuthUser = AuthUser(
-            joinDto.id,
-            joinDto.password,
-            joinDto.name,
-            joinDto.roomNum
+            LoginId = joinDto.LoginId,
+            password = passwordEncoder.encode(joinDto.password),
+            name = joinDto.name,
+            roomNum = joinDto.roomNum,
+            birthYear = Year.of(joinDto.birthYear),
+            yearOfAdmission = Year.of(joinDto.yearOfAdmission),
+            isGraduate = false
         )
-        newUser.password = passwordEncoder.encode(newUser.password)
+
         val save: AuthUser = authRepository.save(newUser)
 
         val response: AuthJoinDto.Response = AuthJoinDto.Response(save.id, save.password)
@@ -54,7 +56,6 @@ class AuthService(
         }
 
 
-
         val token: AccessToken.Response = createAccessToken(user, null)
 
         val response: AuthLoginDto.Response = AuthLoginDto.Response(user.id, token)
@@ -62,7 +63,10 @@ class AuthService(
     }
 
 
-    private fun createAccessToken(user: AuthUser, refreshToken: String?): AccessToken.Response {
+    private fun createAccessToken(
+        user: AuthUser,
+        refreshToken: String?
+    ): AccessToken.Response {
 
         var savedRefreshToken: RefreshToken? = jwtRepository.findById(user.id)
             .orElse(null)
@@ -92,12 +96,14 @@ class AuthService(
         return AccessToken.Response("ok", accessToken, finalRefreshToken)
     }
 
-    fun refreshAccessToken(request: CreateAccessTokenByRefreshToken): AccessToken.Response {
+    fun refreshAccessToken(
+        request: CreateAccessTokenByRefreshToken
+    ): AccessToken.Response {
         try {
 
             val claims: Claims = jwtProvider.getClaims(request.refreshToken)
             val type: String = claims.get("type").toString()
-            if (type == null || !type.equals("Refresh")) {
+            if (!type.equals("Refresh")) {
                 throw Exceptions(errorCode = ErrorCode.INVALID_TOKEN)
             }
 

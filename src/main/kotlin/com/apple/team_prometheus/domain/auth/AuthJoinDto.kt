@@ -8,13 +8,17 @@ class AuthJoinDto {
     )
 
 
-    class Request {
-        val id: Long = 0
+    data class Request (
+        val LoginId: Long = 0,
 
-        var password: String = ""
+        var password: String = "",
 
-        var name: String = ""
+        var name: String = "",
 
-        var roomNum: Int = 0
-    }
+        var roomNum: Int = 0,
+
+        val birthYear: Int = 0,
+
+        var yearOfAdmission: Int = 0
+    )
 }

@@ -10,10 +10,4 @@ import java.time.LocalDateTime
 interface AttendanceRepository: JpaRepository<Attendance, Long> {
 
 
-    fun findByUserAndAttendanceTimeAndCheckTimeBetween(
-        user: AuthUser,
-        attendanceTime: AttendanceTime,
-        start: LocalDateTime,
-        end: LocalDateTime
-    ): List<Attendance>
 }

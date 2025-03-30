@@ -3,6 +3,7 @@ package com.apple.team_prometheus.domain.attendance
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.ResponseBody
 import org.springframework.web.bind.annotation.RestController
 
@@ -14,11 +15,11 @@ class AttendanceController(
 
     @PostMapping("/check/{id}")
     fun checkAttendance(
-        @PathVariable("id") userId: Long
+        @RequestBody request: AttendanceDto.Request
     ): ResponseEntity<AttendanceDto.Response> {
 
         return ResponseEntity.ok(
-            attendanceService.checkAttendance(userId)
+            attendanceService.checkAttendance(request)
         )
     }
 }
