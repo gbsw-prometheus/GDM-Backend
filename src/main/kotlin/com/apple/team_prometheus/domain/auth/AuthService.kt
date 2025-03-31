@@ -30,6 +30,9 @@ class AuthService(
             password = passwordEncoder.encode(joinDto.password),
             name = joinDto.name,
             roomNum = joinDto.roomNum,
+            attendance = emptyList(),
+            noAttendance = emptyList(),
+            role = Role.STUDENT,
             birthYear = Year.of(joinDto.birthYear),
             yearOfAdmission = Year.of(joinDto.yearOfAdmission),
             isGraduate = false
