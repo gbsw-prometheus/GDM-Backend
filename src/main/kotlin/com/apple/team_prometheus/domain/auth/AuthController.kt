@@ -44,5 +44,4 @@ class AuthController(val authService: AuthService) {
             authService.refreshAccessToken(refreshToken)
         )
     }
-
 }

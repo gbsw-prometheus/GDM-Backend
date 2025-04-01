@@ -9,5 +9,6 @@ import java.time.LocalDateTime
 @Repository
 interface AttendanceRepository: JpaRepository<Attendance, Long> {
 
+    fun findByUser(user: AuthUser): List<Attendance>
 
 }

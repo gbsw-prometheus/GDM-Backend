@@ -6,13 +6,21 @@ import jakarta.persistence.*
 import java.time.Year
 
 @Entity(name = "users")
+@Table(
+    uniqueConstraints = [
+        UniqueConstraint(
+            name = "unique_name_birth_year",
+            columnNames = ["name", "birth_year"]
+        )
+    ]
+)
 data class AuthUser(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0L,
 
     @Column(nullable = false)
-    val LoginId: Long,
+    val loginId: Long,
 
     @Column(nullable = false)
     var password: String,

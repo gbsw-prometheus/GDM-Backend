@@ -26,7 +26,7 @@ class AuthService(
     ): AuthJoinDto.Response {
 
         val newUser: AuthUser = AuthUser(
-            LoginId = joinDto.LoginId,
+            loginId =  joinDto.LoginId,
             password = passwordEncoder.encode(joinDto.password),
             name = joinDto.name,
             roomNum = joinDto.roomNum,

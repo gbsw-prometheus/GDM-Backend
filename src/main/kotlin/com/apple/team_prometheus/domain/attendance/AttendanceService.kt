@@ -10,28 +10,26 @@ import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
 import java.time.LocalDateTime
 import java.time.Year
-import kotlin.math.log
-
 
 @Service
-class AttendanceService (
+class AttendanceService(
     private val attendanceRepository: AttendanceRepository,
     private val authRepository: AuthRepository,
     private val noAttendanceRepository: NoAttendanceRepository
 ) {
 
+    fun getNoAttendance(): List<NoAttendance> {
+        return noAttendanceRepository.findAll()
+    }
 
     fun checkAttendance(request: AttendanceDto.Request): AttendanceDto.Response {
         val user = authRepository.findByBirthYearAndNameAndYearOfAdmission(
             birthYear = Year.of(request.birthYear),
             name = request.name,
             yearOfAdmission = Year.of(request.yearOfAdmission)
-        )
-            .orElseThrow {
-                Exceptions(ErrorCode.USER_NOT_FOUND)
-            }
-            ?: throw IllegalStateException("유저가 null입니다.")
-
+        ).orElseThrow {
+            Exceptions(ErrorCode.USER_NOT_FOUND)
+        } ?: throw IllegalStateException("유저가 null입니다.")
 
         val now = LocalDateTime.now()
         if (now.hour !in listOf(8, 12, 18)) {
@@ -46,8 +44,7 @@ class AttendanceService (
         )
 
         val savedAttendance = attendanceRepository.save(attendance)
-
-        val response: AttendanceDto.Response = AttendanceDto.Response(
+        val response = AttendanceDto.Response(
             user = savedAttendance.user,
             checkTime = savedAttendance.checkTime,
             status = savedAttendance.status
@@ -71,24 +68,19 @@ class AttendanceService (
         closeAttendance()
     }
 
-
-    private fun closeAttendance(){
-
-        val students: List<AuthUser?> = authRepository.findAll().filter {
+    private fun closeAttendance() {
+        val students = authRepository.findAll().filter {
             it?.role == Role.STUDENT
         }
 
         students.forEach { student ->
-            student?.let { checkStudent ->
-                checkStudent.attendance.forEach { attendance ->
-                    if (attendance.status == Status.NOT_ATTENDING) {
-                        val noAttendance = NoAttendance(
-                            id = 0L,
-                            student = checkStudent,
-                            attendanceTime = LocalDateTime.now()
-                        )
-                        noAttendanceRepository.save(noAttendance)
-                    }
+            student?.attendance?.forEach { attendance ->
+                if (attendance.status == Status.NOT_ATTENDING) {
+                    val noAttendance: NoAttendance = NoAttendance(
+                        student = student,
+                        attendanceTime = LocalDateTime.now()
+                    )
+                    noAttendanceRepository.save(noAttendance)
                 }
             }
         }
