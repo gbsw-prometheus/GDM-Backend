@@ -21,6 +21,10 @@ class AuthService(
     private val jwtRepository: JwtRepository) {
 
 
+    fun findAllUsers(): MutableList<AuthUser?> {
+        return authRepository.findAll()
+    }
+
     fun userJoin(
         joinDto: AuthJoinDto.Request
     ): AuthJoinDto.Response {

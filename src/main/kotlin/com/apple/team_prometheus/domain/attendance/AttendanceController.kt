@@ -23,7 +23,7 @@ class AttendanceController(
     }
 
     @GetMapping("/no-attendance")
-    fun getNoAttendance(): ResponseEntity<List<NoAttendance>> {
+    fun getNoAttendanceList(): ResponseEntity<List<NoAttendance>> {
         return ResponseEntity.ok(
             attendanceService.getNoAttendance()
         )
