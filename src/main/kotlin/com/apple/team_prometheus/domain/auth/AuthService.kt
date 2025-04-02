@@ -54,12 +54,19 @@ class AuthService(
     ): AuthLoginDto.Response {
 
         val user = authRepository.findByBirthYearAndName(
-            birth = LocalDate.parse(loginDto.birth, DateTimeFormatter.ofPattern("yyyy/MM/dd")),
+            birth = LocalDate.parse(
+                loginDto.birth,
+                DateTimeFormatter.ofPattern("yyyy/MM/dd")
+            ),
             name = loginDto.name
-        ).orElseThrow { Exceptions(errorCode = ErrorCode.USER_NOT_FOUND) }
+        ).orElseThrow {
+            Exceptions(errorCode = ErrorCode.USER_NOT_FOUND)
+        }
 
         if (!passwordEncoder.matches(loginDto.password, user!!.password)) {
-            throw Exceptions(errorCode = ErrorCode.INVALID_PASSWORD)
+            throw Exceptions(
+                errorCode = ErrorCode.INVALID_PASSWORD
+            )
         }
 
         val token = createAccessToken(user)
@@ -82,7 +89,10 @@ class AuthService(
             refreshToken = refreshToken
         ))
 
-        return AccessToken.Response("ok", accessToken, refreshToken)
+        return AccessToken.Response(
+            result = "ok",
+            token = accessToken,
+            refreshToken = refreshToken)
     }
 
     // 리프레시 토큰으로 액세스 토큰 갱신 (회전 적용)
@@ -131,7 +141,11 @@ class AuthService(
                 refreshToken = newRefreshToken
             ))
 
-            return AccessToken.Response("ok", newAccessToken, newRefreshToken)
+            return AccessToken.Response(
+                result = "ok",
+                token = newAccessToken,
+                refreshToken = newRefreshToken
+            )
         } catch (e: ExpiredJwtException) {
             return AccessToken.Response("Expired refresh token", null, null)
         } catch (e: Exceptions) {

@@ -1,17 +1,15 @@
 package com.apple.team_prometheus.domain.attendance
 
 import com.apple.team_prometheus.domain.auth.AuthRepository
-import com.apple.team_prometheus.domain.auth.AuthUser
 import com.apple.team_prometheus.domain.auth.Role
 import com.apple.team_prometheus.global.exception.ErrorCode
 import com.apple.team_prometheus.global.exception.Exceptions
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDate
 import java.time.LocalDateTime
-import java.time.Year
+
 
 @Service
 class AttendanceService(
@@ -29,7 +27,9 @@ class AttendanceService(
             birth = LocalDate.parse(request.birth),
             name = request.name
         ).orElseThrow {
-            Exceptions(ErrorCode.USER_NOT_FOUND)
+            Exceptions(
+                ErrorCode.USER_NOT_FOUND
+            )
         } ?: throw IllegalStateException("유저가 null입니다.")
 
         val now = LocalDateTime.now()

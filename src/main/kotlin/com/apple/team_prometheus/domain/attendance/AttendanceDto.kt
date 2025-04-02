@@ -2,7 +2,6 @@ package com.apple.team_prometheus.domain.attendance
 
 import com.apple.team_prometheus.domain.auth.AuthUser
 import java.time.LocalDateTime
-import java.time.Year
 
 class AttendanceDto {
 

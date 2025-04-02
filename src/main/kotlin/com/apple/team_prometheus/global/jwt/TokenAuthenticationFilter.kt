@@ -15,7 +15,10 @@ import java.io.IOException
 
 
 @Component
-class TokenAuthenticationFilter(val tokenProvider: TokenProvider) : OncePerRequestFilter() {
+class TokenAuthenticationFilter(
+    private val tokenProvider: TokenProvider
+) : OncePerRequestFilter() {
+
     @Throws(ServletException::class, IOException::class)
     override fun doFilterInternal(
         request: HttpServletRequest,
