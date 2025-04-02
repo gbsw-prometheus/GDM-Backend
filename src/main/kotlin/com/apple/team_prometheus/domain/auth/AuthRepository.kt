@@ -2,6 +2,7 @@ package com.apple.team_prometheus.domain.auth
 
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository
+import java.time.Year
 import java.util.*
 
 
@@ -13,4 +14,9 @@ interface AuthRepository : JpaRepository<AuthUser?, Long?> {
 
     override fun existsById(id: Long): Boolean
 
+    fun findByBirthYearAndNameAndYearOfAdmission(
+        birthYear: Year,
+        name: String,
+        yearOfAdmission: Year
+    ): Optional<AuthUser>
 }
