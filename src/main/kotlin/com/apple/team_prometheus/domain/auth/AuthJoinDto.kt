@@ -4,9 +4,9 @@ class AuthJoinDto {
 
     data class Response(
 
-        val id:Long,
+        val name: String,
 
-        val password: String
+        val status: String
     )
 
 

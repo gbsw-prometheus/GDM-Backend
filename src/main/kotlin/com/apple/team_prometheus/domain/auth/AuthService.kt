@@ -42,7 +42,10 @@ class AuthService(
         )
 
         val savedUser = authRepository.save(newUser)
-        return AuthJoinDto.Response(savedUser.id, savedUser.password)
+        return AuthJoinDto.Response(
+            name = savedUser.name,
+            status = "ok"
+        )
     }
 
     @Transactional
@@ -74,7 +77,10 @@ class AuthService(
 
         // 기존 리프레시 토큰 삭제 후 새로 저장
         jwtRepository.deleteById(user.id)
-        jwtRepository.save(RefreshToken(userId = user.id, refreshToken = refreshToken))
+        jwtRepository.save(RefreshToken(
+            userId = user.id,
+            refreshToken = refreshToken
+        ))
 
         return AccessToken.Response("ok", accessToken, refreshToken)
     }
@@ -86,18 +92,30 @@ class AuthService(
             // 1. 리프레시 토큰 검증
             val claims = jwtProvider.getClaims(request.refreshToken)
             if (claims["type"] != "Refresh") {
-                throw Exceptions(errorCode = ErrorCode.INVALID_TOKEN)
+                throw Exceptions(
+                    errorCode = ErrorCode.INVALID_TOKEN
+                )
             }
 
             // 2. 사용자 조회
             val user = authRepository.findByName(claims.subject)
-                .orElseThrow { Exceptions(errorCode = ErrorCode.USER_NOT_FOUND) }
+                .orElseThrow {
+                    Exceptions(
+                        errorCode = ErrorCode.USER_NOT_FOUND
+                    )
+                }
 
             // 3. 저장된 리프레시 토큰 확인
             val storedToken = jwtRepository.findById(user!!.id)
-                .orElseThrow { Exceptions(errorCode = ErrorCode.INVALID_TOKEN) }
+                .orElseThrow {
+                    Exceptions(
+                        errorCode = ErrorCode.INVALID_TOKEN
+                    )
+                }
             if (storedToken.refreshToken != request.refreshToken) {
-                throw Exceptions(errorCode = ErrorCode.INVALID_TOKEN)
+                throw Exceptions(
+                    errorCode = ErrorCode.INVALID_TOKEN
+                )
             }
 
             // 4. 새 토큰 생성
@@ -108,7 +126,10 @@ class AuthService(
 
             // 5. 기존 리프레시 토큰 무효화 및 새 토큰 저장
             jwtRepository.delete(storedToken)
-            jwtRepository.save(RefreshToken(userId = user.id, refreshToken = newRefreshToken))
+            jwtRepository.save(RefreshToken(
+                userId = user.id,
+                refreshToken = newRefreshToken
+            ))
 
             return AccessToken.Response("ok", newAccessToken, newRefreshToken)
         } catch (e: ExpiredJwtException) {
