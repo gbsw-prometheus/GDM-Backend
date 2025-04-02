@@ -2,7 +2,9 @@ package com.apple.team_prometheus.domain.auth
 
 import com.apple.team_prometheus.domain.attendance.Attendance
 import com.apple.team_prometheus.domain.attendance.NoAttendance
+import com.fasterxml.jackson.annotation.JsonIgnore
 import jakarta.persistence.*
+import java.time.LocalDate
 import java.time.Year
 
 @Entity(name = "users")
@@ -20,12 +22,10 @@ data class AuthUser(
     val id: Long = 0L,
 
     @Column(nullable = false)
-    val loginId: Long,
-
-    @Column(nullable = false)
+    @JsonIgnore
     var password: String,
 
-    @Column(nullable = false)
+    @Column(nullable = false, name = "name")
     var name: String,
 
     @Column(nullable = false)
@@ -34,14 +34,14 @@ data class AuthUser(
     @Column(nullable = false)
     val role: Role,
 
-    @OneToMany(fetch = FetchType.LAZY)
+    @OneToMany(fetch = FetchType.EAGER)
     var attendance: List<Attendance>,
 
-    @OneToMany(fetch = FetchType.LAZY)
+    @OneToMany(fetch = FetchType.EAGER)
     var noAttendance: List<NoAttendance>,
 
-    @Column(nullable = false)
-    var birthYear: Year,
+    @Column(nullable = false, name = "birth_year")
+    var birth: LocalDate,
 
     @Column(nullable = false)
     val yearOfAdmission: Year,
@@ -52,6 +52,16 @@ data class AuthUser(
 
 
 ) {
-    constructor() : this(0L, 0L, "", "", 0, Role.STUDENT, emptyList(), emptyList(),Year.now(), Year.now(), false)
+    constructor() : this(
+        password = "",
+        name = "",
+        roomNum = 0,
+        role = Role.STUDENT,
+        attendance = emptyList(),
+        noAttendance = emptyList(),
+        birth = LocalDate.now(),
+        yearOfAdmission = Year.now(),
+        isGraduate = false
+    )
 
 }

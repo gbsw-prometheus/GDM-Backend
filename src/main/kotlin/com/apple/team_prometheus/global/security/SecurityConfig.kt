@@ -30,13 +30,9 @@ class SecurityConfig(
             .authorizeHttpRequests { auth ->
 
                 auth
-                    .requestMatchers("/api/check-in/**").access { _, request ->
-                        val remoteAddr = (request as HttpServletRequest).remoteAddr
-                        val allowedIp = "172.16.1.250"
-                        AuthorizationDecision(remoteAddr == allowedIp)
-                    }
-                    .requestMatchers("/auth/join").hasRole("TEACHER")
+                    //.requestMatchers("/auth/join").hasRole("TEACHER")
                     .requestMatchers(
+                        AntPathRequestMatcher("/auth/join"),
                         AntPathRequestMatcher("/auth/login"),
                         AntPathRequestMatcher("/auth/login/token"),
                         AntPathRequestMatcher("/swagger-ui.html"),

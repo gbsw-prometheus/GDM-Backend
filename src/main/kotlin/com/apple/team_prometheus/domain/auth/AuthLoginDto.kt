@@ -10,9 +10,9 @@ class AuthLoginDto {
         var token: AccessToken.Response
     )
 
-    class Request {
-        val id: Long = 0
-
-        var password: String = ""
-    }
+    data class Request (
+        var name: String,
+        var birth: String,
+        var password: String,
+    )
 }

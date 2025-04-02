@@ -13,7 +13,7 @@ class AttendanceDto {
     )
 
     data class Request(
-        val birthYear: Int,
+        val birth: String,
         val name: String,
         val yearOfAdmission: Int
     )

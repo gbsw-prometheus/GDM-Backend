@@ -3,13 +3,14 @@ package com.apple.team_prometheus.domain.auth
 import com.apple.team_prometheus.global.exception.ErrorCode
 import com.apple.team_prometheus.global.exception.Exceptions
 import com.apple.team_prometheus.global.jwt.*
-import io.jsonwebtoken.Claims
 import io.jsonwebtoken.ExpiredJwtException
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.Duration
+import java.time.LocalDate
 import java.time.Year
+import java.time.format.DateTimeFormatter
 
 
 @Service
@@ -18,8 +19,8 @@ class AuthService(
     private val passwordEncoder: PasswordEncoder,
     private val jwtProperties: JwtProperties,
     private val jwtProvider: TokenProvider,
-    private val jwtRepository: JwtRepository) {
-
+    private val jwtRepository: JwtRepository
+) {
 
     fun findAllUsers(): MutableList<AuthUser?> {
         return authRepository.findAll()
@@ -28,106 +29,94 @@ class AuthService(
     fun userJoin(
         joinDto: AuthJoinDto.Request
     ): AuthJoinDto.Response {
-
-        val newUser: AuthUser = AuthUser(
-            loginId =  joinDto.LoginId,
-            password = passwordEncoder.encode(joinDto.password),
+        val newUser = AuthUser(
+           password = passwordEncoder.encode(joinDto.password),
             name = joinDto.name,
             roomNum = joinDto.roomNum,
+            role = Role.STUDENT,
             attendance = emptyList(),
             noAttendance = emptyList(),
-            role = Role.STUDENT,
-            birthYear = Year.of(joinDto.birthYear),
+            birth = LocalDate.parse(joinDto.birth, DateTimeFormatter.ofPattern("yyyy/MM/dd")),
             yearOfAdmission = Year.of(joinDto.yearOfAdmission),
             isGraduate = false
         )
 
-        val save: AuthUser = authRepository.save(newUser)
-
-        val response: AuthJoinDto.Response = AuthJoinDto.Response(save.id, save.password)
-
-        return response
+        val savedUser = authRepository.save(newUser)
+        return AuthJoinDto.Response(savedUser.id, savedUser.password)
     }
 
-
     @Transactional
-    fun userLogin(loginDto: AuthLoginDto.Request): AuthLoginDto.Response {
+    fun userLogin(
+        loginDto: AuthLoginDto.Request
+    ): AuthLoginDto.Response {
 
-        val user: AuthUser? = authRepository.findById(loginDto.id)
-            .orElseThrow {
-                Exceptions(errorCode = ErrorCode.USER_NOT_FOUND)
-            }
+        val user = authRepository.findByBirthYearAndName(
+            birth = LocalDate.parse(loginDto.birth, DateTimeFormatter.ofPattern("yyyy/MM/dd")),
+            name = loginDto.name
+        ).orElseThrow { Exceptions(errorCode = ErrorCode.USER_NOT_FOUND) }
 
         if (!passwordEncoder.matches(loginDto.password, user!!.password)) {
             throw Exceptions(errorCode = ErrorCode.INVALID_PASSWORD)
         }
 
-
-        val token: AccessToken.Response = createAccessToken(user, null)
-
-        val response: AuthLoginDto.Response = AuthLoginDto.Response(user.id, token)
-        return response
+        val token = createAccessToken(user)
+        return AuthLoginDto.Response(user.id, token)
     }
 
+    // 로그인 시 새 토큰 생성
+    @Transactional
+    fun createAccessToken(user: AuthUser): AccessToken.Response {
+        val tokenDuration = Duration.ofMinutes(jwtProperties.duration)
+        val refreshDuration = Duration.ofMinutes(jwtProperties.refreshDuration)
 
-    private fun createAccessToken(
-        user: AuthUser,
-        refreshToken: String?
-    ): AccessToken.Response {
-
-        var savedRefreshToken: RefreshToken? = jwtRepository.findById(user.id)
-            .orElse(null)
-
-        if (savedRefreshToken != null && refreshToken != null) {
-            if (!savedRefreshToken.getRefreshToken().equals(refreshToken)) return AccessToken.Response(
-                "Invalid token.",
-                null,
-                null
-            )
-        }
-
-        val tokenDuration: Duration = Duration.ofMinutes(jwtProperties.duration)
-        val refreshDuration: Duration = Duration.ofMinutes(jwtProperties.refreshDuration)
         val accessToken = jwtProvider.generateToken(user, tokenDuration, true)
+        val refreshToken = jwtProvider.generateToken(user, refreshDuration, false)
 
+        // 기존 리프레시 토큰 삭제 후 새로 저장
+        jwtRepository.deleteById(user.id)
+        jwtRepository.save(RefreshToken(userId = user.id, refreshToken = refreshToken))
 
-        val finalRefreshToken = if (savedRefreshToken == null) {
-            val newRefreshToken = jwtProvider.generateToken(user, Duration.ofMinutes(jwtProperties.refreshDuration), false)
-            savedRefreshToken = RefreshToken(user.id, newRefreshToken)
-            jwtRepository.save(savedRefreshToken)
-            newRefreshToken
-        } else {
-            savedRefreshToken.getRefreshToken()
-        }
-
-        return AccessToken.Response("ok", accessToken, finalRefreshToken)
+        return AccessToken.Response("ok", accessToken, refreshToken)
     }
 
-    fun refreshAccessToken(
-        request: CreateAccessTokenByRefreshToken
-    ): AccessToken.Response {
+    // 리프레시 토큰으로 액세스 토큰 갱신 (회전 적용)
+    @Transactional
+    fun refreshAccessToken(request: CreateAccessTokenByRefreshToken): AccessToken.Response {
         try {
-
-            val claims: Claims = jwtProvider.getClaims(request.refreshToken)
-            val type: String = claims.get("type").toString()
-            if (!type.equals("Refresh")) {
+            // 1. 리프레시 토큰 검증
+            val claims = jwtProvider.getClaims(request.refreshToken)
+            if (claims["type"] != "Refresh") {
                 throw Exceptions(errorCode = ErrorCode.INVALID_TOKEN)
             }
 
-            val user: AuthUser = authRepository.findByName(claims.subject)
-                .orElseThrow{
-                    Exceptions(errorCode = ErrorCode.USER_NOT_FOUND)
-                }!!
+            // 2. 사용자 조회
+            val user = authRepository.findByName(claims.subject)
+                .orElseThrow { Exceptions(errorCode = ErrorCode.USER_NOT_FOUND) }
 
-            return createAccessToken(user, request.refreshToken)
+            // 3. 저장된 리프레시 토큰 확인
+            val storedToken = jwtRepository.findById(user!!.id)
+                .orElseThrow { Exceptions(errorCode = ErrorCode.INVALID_TOKEN) }
+            if (storedToken.refreshToken != request.refreshToken) {
+                throw Exceptions(errorCode = ErrorCode.INVALID_TOKEN)
+            }
+
+            // 4. 새 토큰 생성
+            val tokenDuration = Duration.ofMinutes(jwtProperties.duration)
+            val refreshDuration = Duration.ofMinutes(jwtProperties.refreshDuration)
+            val newAccessToken = jwtProvider.generateToken(user, tokenDuration, true)
+            val newRefreshToken = jwtProvider.generateToken(user, refreshDuration, false)
+
+            // 5. 기존 리프레시 토큰 무효화 및 새 토큰 저장
+            jwtRepository.delete(storedToken)
+            jwtRepository.save(RefreshToken(userId = user.id, refreshToken = newRefreshToken))
+
+            return AccessToken.Response("ok", newAccessToken, newRefreshToken)
         } catch (e: ExpiredJwtException) {
-
-            return AccessToken.Response(e.message, null, null)
+            return AccessToken.Response("Expired refresh token", null, null)
+        } catch (e: Exceptions) {
+            return AccessToken.Response(e.message ?: "Invalid token", null, null)
         } catch (e: Exception) {
-
-            return AccessToken.Response(e.message, null, null)
+            return AccessToken.Response("An error occurred: ${e.message}", null, null)
         }
     }
-
-
 }

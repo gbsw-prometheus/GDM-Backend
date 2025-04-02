@@ -9,28 +9,10 @@ import jakarta.persistence.Id
 
 @Entity
 data class RefreshToken(
-    @field:Column(
-        updatable = true, nullable = false
-    ) private val userId: Long,
-
-    @field:Column(
-        nullable = false
-    ) private var refreshToken: String
-
-) {
-
-
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(updatable = false)
-    private val id: Long? = null
-
-    fun getRefreshToken(): String = refreshToken
-
-    fun setRefreshToken(newRefreshToken: String) {
-        this.refreshToken = newRefreshToken
-    }
-
+    val userId: Long,
+    @Column(nullable = false, length = 1000)
+    val refreshToken: String
+) {
     constructor() : this(0L, "")
-
 }
