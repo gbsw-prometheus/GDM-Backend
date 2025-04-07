@@ -2,7 +2,6 @@ package com.apple.team_prometheus.domain.attendance
 
 import com.apple.team_prometheus.domain.auth.AuthUser
 import java.time.LocalDateTime
-import java.time.Year
 
 class AttendanceDto {
 
@@ -13,7 +12,7 @@ class AttendanceDto {
     )
 
     data class Request(
-        val birthYear: Int,
+        val birth: String,
         val name: String,
         val yearOfAdmission: Int
     )

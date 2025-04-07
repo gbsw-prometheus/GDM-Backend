@@ -2,10 +2,8 @@ package com.apple.team_prometheus.global.security
 
 import com.apple.team_prometheus.global.jwt.TokenAuthenticationFilter
 import com.apple.team_prometheus.global.jwt.TokenExceptionFilter
-import jakarta.servlet.http.HttpServletRequest
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import org.springframework.security.authorization.AuthorizationDecision
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configurers.*
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
@@ -13,7 +11,7 @@ import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher
-import java.net.InetAddress
+
 
 
 @Configuration
@@ -30,13 +28,9 @@ class SecurityConfig(
             .authorizeHttpRequests { auth ->
 
                 auth
-                    .requestMatchers("/api/check-in/**").access { _, request ->
-                        val remoteAddr = (request as HttpServletRequest).remoteAddr
-                        val allowedIp = "172.16.1.250"
-                        AuthorizationDecision(remoteAddr == allowedIp)
-                    }
-                    .requestMatchers("/auth/join").hasRole("TEACHER")
+                    //.requestMatchers("/auth/join").hasRole("TEACHER")
                     .requestMatchers(
+                        AntPathRequestMatcher("/auth/join"),
                         AntPathRequestMatcher("/auth/login"),
                         AntPathRequestMatcher("/auth/login/token"),
                         AntPathRequestMatcher("/swagger-ui.html"),

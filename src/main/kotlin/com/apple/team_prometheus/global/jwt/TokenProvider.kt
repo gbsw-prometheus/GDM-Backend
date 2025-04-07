@@ -25,6 +25,7 @@ class TokenProvider(private val jwtProperties: JwtProperties) {
         .setAllowedClockSkewSeconds(60)
         .build()
 
+    // 토큰 생성 (액세스/리프레시 공통)
     fun generateToken(user: AuthUser, expiredAt: Duration, isAccessToken: Boolean): String {
         val now = Date()
         val expiry = Date(now.time + expiredAt.toMillis())
@@ -36,12 +37,14 @@ class TokenProvider(private val jwtProperties: JwtProperties) {
             .setIssuedAt(now)
             .setExpiration(expiry)
             .setSubject(user.name)
+            .claim("role", user.role.name)
             .claim("type", if (isAccessToken) "Access" else "Refresh")
             .claim("id", user.id)
             .signWith(key, SignatureAlgorithm.HS256)
             .compact()
     }
 
+    // 액세스 토큰용 인증 객체 생성
     fun getAuthentication(token: String?): Authentication {
         requireNotNull(token) { "Token cannot be null" }
 
@@ -50,10 +53,10 @@ class TokenProvider(private val jwtProperties: JwtProperties) {
         val tokenType = claims["type"]?.toString()
             ?: throw IllegalArgumentException("Claims에서 토큰 유형을 찾지 못하였습니다.")
         if (tokenType != "Access") {
-            throw IllegalArgumentException("RefreshToken은 인증에 사용 할 수없습니다")
+            throw IllegalArgumentException("RefreshToken은 인증에 사용할 수 없습니다")
         }
 
-        val authorities = listOf(SimpleGrantedAuthority("ROLE_USER"))
+        val authorities = listOf(SimpleGrantedAuthority("ROLE_${claims["role"] ?: "USER"}"))
         val userDetails = User(
             claims.subject ?: throw IllegalArgumentException("Subject not found in token"),
             "",
@@ -63,16 +66,20 @@ class TokenProvider(private val jwtProperties: JwtProperties) {
         return UsernamePasswordAuthenticationToken(userDetails, token, authorities)
     }
 
+    // 토큰에서 Claims 추출
     fun getClaims(token: String?): Claims {
         try {
-            requireNotNull(token) { "Token cannot be null" }
+            requireNotNull(token) {
+                "Token cannot be null"
+            }
+
             return parser.parseClaimsJws(token).body
         } catch (e: JwtException) {
             throw IllegalArgumentException("Invalid JWT token: ${e.message}")
         }
     }
 
-
+    // 토큰 유효성 검사
     fun isValidToken(token: String?): Boolean {
         return try {
             getClaims(token)
@@ -80,5 +87,19 @@ class TokenProvider(private val jwtProperties: JwtProperties) {
         } catch (e: IllegalArgumentException) {
             false
         }
+    }
+
+    // 사용자 ID 추출 (리프레시 토큰 검증용)
+    fun getUserIdFromToken(token: String?): Long {
+        val claims = getClaims(token)
+        return claims["id"]?.toString()?.toLong()
+            ?: throw IllegalArgumentException("ID not found in token")
+    }
+
+    // 토큰 타입 확인
+    fun getTokenType(token: String?): String {
+        val claims = getClaims(token)
+        return claims["type"]?.toString()
+            ?: throw IllegalArgumentException("Token type not found in claims")
     }
 }

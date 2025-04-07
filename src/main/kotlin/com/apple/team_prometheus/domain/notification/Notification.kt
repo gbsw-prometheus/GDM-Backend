@@ -15,4 +15,10 @@ data class Notification (
     var title: String,
     @Column(nullable = false)
     var detail: String
-)
+) {
+    constructor() : this(
+        id = 0L,
+        title = "",
+        detail = ""
+    )
+}

@@ -3,22 +3,23 @@ package com.apple.team_prometheus.domain.auth
 class AuthJoinDto {
 
     data class Response(
-        val id:Long,
-        val password: String
+
+        val name: String,
+
+        val status: String
     )
 
 
     data class Request (
-        val LoginId: Long = 0,
 
-        var password: String = "",
+        var name: String,
 
-        var name: String = "",
+        var password: String,
 
-        var roomNum: Int = 0,
+        var roomNum: Int,
 
-        val birthYear: Int = 0,
+        val birth: String,
 
-        var yearOfAdmission: Int = 0
+        var yearOfAdmission: Int
     )
 }
