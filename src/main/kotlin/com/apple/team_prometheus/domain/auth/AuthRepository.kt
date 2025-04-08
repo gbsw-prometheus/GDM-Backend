@@ -10,6 +10,10 @@ import java.util.*
 
 @Repository
 interface AuthRepository : JpaRepository<AuthUser?, Long?> {
+
+    @Query("SELECT u FROM users u WHERE u.id NOT IN (SELECT g.user.id FROM GoingApply g WHERE g.going = true)")
+    fun findAllExcludingGoingUsers(): List<AuthUser?>
+
     override fun findById(id: Long): Optional<AuthUser?>
 
     fun findByName(name: String): Optional<AuthUser?>
