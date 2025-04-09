@@ -25,5 +25,8 @@ data class NoAttendance (
     val attendanceTime:LocalDateTime
 
 ) {
-    constructor() : this(0L, AuthUser(), LocalDateTime.now())
+    constructor() : this(
+        id = 0L,
+        student = AuthUser(),
+        attendanceTime = LocalDateTime.now())
 }

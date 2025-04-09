@@ -1,5 +1,7 @@
 package com.apple.team_prometheus.domain.auth
 
+import com.apple.team_prometheus.domain.attendance.Attendance
+import com.apple.team_prometheus.domain.attendance.Status
 import com.apple.team_prometheus.global.exception.ErrorCode
 import com.apple.team_prometheus.global.exception.Exceptions
 import com.apple.team_prometheus.global.jwt.*
@@ -29,23 +31,36 @@ class AuthService(
     fun userJoin(
         joinDto: AuthJoinDto.Request
     ): AuthJoinDto.Response {
+
+
         val newUser = AuthUser(
            password = passwordEncoder.encode(joinDto.password),
             name = joinDto.name,
             roomNum = joinDto.roomNum,
             role = Role.STUDENT,
-            attendance = emptyList(),
+            attendance = null,
             noAttendance = emptyList(),
             birth = LocalDate.parse(joinDto.birth, DateTimeFormatter.ofPattern("yyyy/MM/dd")),
             yearOfAdmission = Year.of(joinDto.yearOfAdmission),
             isGraduate = false
         )
 
+        val attendance: Attendance = Attendance(
+            user = newUser,
+            checkTime = null,
+            status = Status.NOT_ATTENDING
+        )
+
+        newUser.attendance = attendance
+
         val savedUser = authRepository.save(newUser)
-        return AuthJoinDto.Response(
+
+        val response: AuthJoinDto.Response =  AuthJoinDto.Response(
             name = savedUser.name,
             status = "ok"
         )
+
+        return response
     }
 
     @Transactional
@@ -70,7 +85,7 @@ class AuthService(
         }
 
         val token = createAccessToken(user)
-        return AuthLoginDto.Response(user.id, token)
+        return AuthLoginDto.Response(user.name, token)
     }
 
     // 로그인 시 새 토큰 생성
@@ -91,8 +106,9 @@ class AuthService(
 
         return AccessToken.Response(
             result = "ok",
-            token = accessToken,
-            refreshToken = refreshToken)
+            accessToken = accessToken,
+            refreshToken = refreshToken
+        )
     }
 
     // 리프레시 토큰으로 액세스 토큰 갱신 (회전 적용)
@@ -122,17 +138,21 @@ class AuthService(
                         errorCode = ErrorCode.INVALID_TOKEN
                     )
                 }
+
+            // 저장된 리프레시 토큰과 요청된 리프레시 토큰이 일치하는지 확인
             if (storedToken.refreshToken != request.refreshToken) {
                 throw Exceptions(
                     errorCode = ErrorCode.INVALID_TOKEN
                 )
             }
 
-            // 4. 새 토큰 생성
+
+            // 4. 새로운 액세스 토큰 및 리프레시 토큰 생성
             val tokenDuration = Duration.ofMinutes(jwtProperties.duration)
             val refreshDuration = Duration.ofMinutes(jwtProperties.refreshDuration)
             val newAccessToken = jwtProvider.generateToken(user, tokenDuration, true)
             val newRefreshToken = jwtProvider.generateToken(user, refreshDuration, false)
+
 
             // 5. 기존 리프레시 토큰 무효화 및 새 토큰 저장
             jwtRepository.delete(storedToken)
@@ -141,11 +161,13 @@ class AuthService(
                 refreshToken = newRefreshToken
             ))
 
+
             return AccessToken.Response(
                 result = "ok",
-                token = newAccessToken,
+                accessToken =  newAccessToken,
                 refreshToken = newRefreshToken
             )
+
         } catch (e: ExpiredJwtException) {
             return AccessToken.Response("Expired refresh token", null, null)
         } catch (e: Exceptions) {

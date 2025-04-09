@@ -29,5 +29,12 @@ data class GoingApply(
     val content: String
 ) {
 
-    constructor() : this(0L, AuthUser(), false, LocalDate.now(), LocalDate.now(), "", "")
+    constructor() : this(
+        id = 0L,
+        user = AuthUser(),
+        going = false,
+        outDateTime = LocalDate.now(),
+        inDateTime = LocalDate.now(),
+        title = "",
+        content = "")
 }

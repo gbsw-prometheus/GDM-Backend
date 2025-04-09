@@ -1,5 +1,8 @@
 package com.apple.team_prometheus.domain.attendance
 
+import com.apple.team_prometheus.global.exception.ErrorCode
+import com.apple.team_prometheus.global.exception.Exceptions
+
 enum class Status {
     ATTENDED,
     NOT_ATTENDING;
@@ -8,7 +11,9 @@ enum class Status {
 
     fun changeStatus(): Status {
         return when (this) {
-            ATTENDED -> NOT_ATTENDING
+            ATTENDED -> throw Exceptions(
+                ErrorCode.ALREADY_ATTENDED
+            )
             NOT_ATTENDING -> ATTENDED
         }
     }
