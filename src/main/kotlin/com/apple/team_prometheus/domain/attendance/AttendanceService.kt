@@ -72,10 +72,16 @@ class AttendanceService(
         closeAttendance()
     }
 
+    fun testAPI(): String {
+        closeAttendance()
+
+        return "Test API executed successfully"
+    }
 
     private fun closeAttendance() {
         val students = authRepository.findAll().filter {
-            it?.role == Role.STUDENT
+            it?.role == Role.STUDENT &&
+            authRepository.findAllExcludingGoingUsers().contains(it)
         }
 
         students.forEach { student ->

@@ -22,8 +22,8 @@ class AuthService(
     private val jwtRepository: JwtRepository
 ) {
 
-    fun findAllUsers(): MutableList<AuthUser?> {
-        return authRepository.findAll()
+    fun findAllUsers(): List<AuthUser?> {
+        return authRepository.findAllExcludingGoingUsers()
     }
 
     fun userJoin(

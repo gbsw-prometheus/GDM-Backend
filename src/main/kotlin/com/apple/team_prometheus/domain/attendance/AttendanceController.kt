@@ -29,4 +29,10 @@ class AttendanceController(
             attendanceService.getNoAttendance()
         )
     }
+
+    @PostMapping(value = ["/test"])
+    fun testAPI(): ResponseEntity<String> {
+
+        return ResponseEntity.ok(attendanceService.testAPI())
+    }
 }

@@ -48,7 +48,7 @@ class AuthController(val authService: AuthService) {
 
 
     @GetMapping(value = ["/users"])
-    fun findAllUsers(): ResponseEntity<MutableList<AuthUser?>> {
+    fun findAllUsers(): ResponseEntity<List<AuthUser?>> {
         return ResponseEntity.ok(
             authService.findAllUsers()
         )
