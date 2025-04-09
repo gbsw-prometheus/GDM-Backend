@@ -1,15 +1,16 @@
 package com.apple.team_prometheus.domain.going
 
 import com.apple.team_prometheus.domain.auth.AuthUser
-import java.time.LocalDateTime
+import java.time.LocalDate
+
 
 
 class GoingDto {
 
     data class GoingRequest(
         val userId: Long,
-        val outDateTime: LocalDateTime,
-        val inDateTime: LocalDateTime,
+        val outDateTime: LocalDate,
+        val inDateTime: LocalDate,
         val title: String,
         val content: String
     )

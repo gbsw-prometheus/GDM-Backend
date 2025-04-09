@@ -24,6 +24,14 @@ class GoingService(
     }
 
     fun registrationGoing(goingRequest: GoingDto.GoingRequest): GoingDto.GoingResponse {
+        if (goingRequest.outDateTime.isBefore(java.time.LocalDate.now()) ||
+            goingRequest.inDateTime.isBefore(java.time.LocalDate.now()) ||
+            goingRequest.outDateTime.isBefore(goingRequest.inDateTime)) {
+
+            throw Exceptions(
+                ErrorCode.INVALID_DATE_ERROR
+            )
+        }
 
         val student: AuthUser? = authRepository.findById(goingRequest.userId)
             .orElseThrow {

@@ -4,9 +4,12 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.RequestMapping
 
 
-@RestController(value = "/api/going")
+
+@RestController
+@RequestMapping(value = ["/api/going"])
 class GoingController(
     private val goingService: GoingService,
 ) {

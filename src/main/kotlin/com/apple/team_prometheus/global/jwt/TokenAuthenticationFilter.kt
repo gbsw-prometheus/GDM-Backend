@@ -34,10 +34,10 @@ class TokenAuthenticationFilter(
 
         try {
             if (token != null) {
-                println("TokenAuthenticationFilter: Validating token")
                 val authentication: Authentication = tokenProvider.getAuthentication(token)
-                println("Authentication: $authentication")
+                println("Authorities before: ${authentication.authorities}")
                 SecurityContextHolder.getContext().authentication = authentication
+                println("Authorities after: ${SecurityContextHolder.getContext().authentication?.authorities}")
             } else {
                 println("TokenAuthenticationFilter: No token provided")
             }

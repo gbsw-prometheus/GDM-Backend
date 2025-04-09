@@ -2,7 +2,7 @@ package com.apple.team_prometheus.domain.going
 
 import com.apple.team_prometheus.domain.auth.AuthUser
 import jakarta.persistence.*
-import java.time.LocalDateTime
+import java.time.LocalDate
 
 @Entity
 data class GoingApply(
@@ -17,10 +17,10 @@ data class GoingApply(
     var going: Boolean = false,
 
     @Column(nullable = false)
-    val outDateTime: LocalDateTime,
+    val outDateTime: LocalDate,
 
     @Column(nullable = false)
-    val inDateTime: LocalDateTime,
+    val inDateTime: LocalDate,
 
     @Column(nullable = false)
     val title: String,
@@ -28,5 +28,6 @@ data class GoingApply(
     @Column(nullable = false)
     val content: String
 ) {
-    constructor() : this(0L, AuthUser(), false, LocalDateTime.now(), LocalDateTime.now(), "", "")
+
+    constructor() : this(0L, AuthUser(), false, LocalDate.now(), LocalDate.now(), "", "")
 }

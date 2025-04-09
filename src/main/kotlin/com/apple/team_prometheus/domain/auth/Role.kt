@@ -5,7 +5,7 @@ enum class Role {
     TEACHER;
 
 
-    fun getAuthority(): String {
-        return "ROLE_$this"
+    open fun getAuthority(): String {
+        return "$this"
     }
 }
