@@ -30,6 +30,9 @@ class SecurityConfig(
                 auth
                     //.requestMatchers("/auth/join").hasRole("TEACHER")
                     .requestMatchers(
+                        AntPathRequestMatcher("/api/going/**"),
+                    ).hasRole("TEACHER")
+                    .requestMatchers(
                         AntPathRequestMatcher("/auth/join"),
                         AntPathRequestMatcher("/auth/login"),
                         AntPathRequestMatcher("/auth/login/token"),
@@ -37,7 +40,7 @@ class SecurityConfig(
                         AntPathRequestMatcher("/swagger-ui/**"),
                         AntPathRequestMatcher("/v3/api-docs/**")
                     ).permitAll()
-                        .anyRequest().authenticated()
+                    .anyRequest().authenticated()
             }
             .addFilterBefore(tokenAuthenticationFilter, UsernamePasswordAuthenticationFilter::class.java)
             .addFilterBefore(tokenExceptionFilter, TokenAuthenticationFilter::class.java)

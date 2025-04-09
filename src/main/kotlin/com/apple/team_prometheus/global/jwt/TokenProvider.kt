@@ -37,7 +37,7 @@ class TokenProvider(private val jwtProperties: JwtProperties) {
             .setIssuedAt(now)
             .setExpiration(expiry)
             .setSubject(user.name)
-            .claim("role", user.role.name)
+            .claim("role", user.role.getAuthority())
             .claim("type", if (isAccessToken) "Access" else "Refresh")
             .claim("id", user.id)
             .signWith(key, SignatureAlgorithm.HS256)

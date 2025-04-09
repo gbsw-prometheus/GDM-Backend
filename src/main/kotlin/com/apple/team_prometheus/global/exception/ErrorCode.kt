@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus
 enum class ErrorCode(val httpStatus: HttpStatus, val errorMessage: String) {
     // Status 400
     INVALID_REQUEST_ERROR(HttpStatus.BAD_REQUEST, "잘못된 요청값"),
+    INVALID_DATE_ERROR(HttpStatus.BAD_REQUEST, "잘못된 날짜값"),
 
 
     // Status 401
