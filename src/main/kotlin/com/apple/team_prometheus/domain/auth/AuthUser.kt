@@ -34,7 +34,7 @@ data class AuthUser(
     @Column(nullable = false)
     val role: Role,
 
-    @OneToOne(fetch = FetchType.EAGER, cascade = [CascadeType.ALL])
+    @OneToOne(fetch = FetchType.LAZY, cascade = [CascadeType.ALL])
     var attendance: Attendance? = null,
 
     @OneToMany(fetch = FetchType.EAGER)

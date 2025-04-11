@@ -1,13 +1,7 @@
 package com.apple.team_prometheus.domain.attendance
 
 import com.apple.team_prometheus.domain.auth.AuthUser
-import jakarta.persistence.Column
-import jakarta.persistence.Entity
-import jakarta.persistence.GeneratedValue
-import jakarta.persistence.GenerationType
-import jakarta.persistence.Id
-import jakarta.persistence.JoinColumn
-import jakarta.persistence.OneToOne
+import jakarta.persistence.*
 import java.time.LocalDateTime
 
 
@@ -17,7 +11,7 @@ data class Attendance(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0L,
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "users_id", nullable = false)
     val user: AuthUser?,
 
