@@ -1,6 +1,7 @@
 package com.apple.team_prometheus.domain.attendance
 
 import com.apple.team_prometheus.domain.auth.AuthRepository
+import com.apple.team_prometheus.domain.auth.AuthUser
 import com.apple.team_prometheus.domain.auth.Role
 import com.apple.team_prometheus.global.exception.ErrorCode
 import com.apple.team_prometheus.global.exception.Exceptions
@@ -30,24 +31,28 @@ class AttendanceService(
             Exceptions(
                 ErrorCode.USER_NOT_FOUND
             )
-        } ?: throw IllegalStateException("유저가 null입니다.")
+        } ?: throw Exceptions(
+            ErrorCode.USER_NOT_FOUND
+        )
 
         val now = LocalDateTime.now()
         if (now.hour !in listOf(8, 12, 18)) {
-            throw IllegalStateException("지금은 출석 체크 시간이 아닙니다.")
+            throw Exceptions(
+                ErrorCode.NOT_ATTENDANCE_TIME
+            )
         }
 
         val attendance = Attendance(
             id = 0L,
             user = user,
             checkTime = now,
-            status = Status.ATTENDED
+            status = user.attendance!!.status.changeStatus()
         )
 
         val savedAttendance = attendanceRepository.save(attendance)
         val response = AttendanceDto.Response(
-            user = savedAttendance.user,
-            checkTime = savedAttendance.checkTime,
+            user = savedAttendance.user!!,
+            checkTime = savedAttendance.checkTime!!,
             status = savedAttendance.status
         )
 
@@ -79,20 +84,19 @@ class AttendanceService(
     }
 
     private fun closeAttendance() {
-        val students = authRepository.findAll().filter {
+        val students: List<AuthUser?> = authRepository.findAll().filter {
             it?.role == Role.STUDENT &&
             authRepository.findAllExcludingGoingUsers().contains(it)
         }
 
         students.forEach { student ->
-            student?.attendance?.forEach { attendance ->
-                if (attendance.status == Status.NOT_ATTENDING) {
-                    val noAttendance: NoAttendance = NoAttendance(
-                        student = student,
-                        attendanceTime = LocalDateTime.now()
-                    )
-                    noAttendanceRepository.save(noAttendance)
-                }
+            val attendance = student?.attendance
+            if (attendance?.status == Status.NOT_ATTENDING) {
+                val noAttendance: NoAttendance = NoAttendance(
+                    student = student,
+                    attendanceTime = LocalDateTime.now()
+                )
+                noAttendanceRepository.save(noAttendance)
             }
         }
     }

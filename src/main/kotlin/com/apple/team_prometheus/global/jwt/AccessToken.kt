@@ -4,7 +4,7 @@ class AccessToken {
 
     data class Response (
         val result: String?,
-        val token: String?,
+        val accessToken: String?,
         val refreshToken: String?
     )
 

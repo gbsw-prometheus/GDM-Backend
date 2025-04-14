@@ -16,7 +16,8 @@ import java.io.IOException
 
 @Component
 class TokenAuthenticationFilter(
-    private val tokenProvider: TokenProvider
+    private val tokenProvider: TokenProvider,
+    private val jwtRepository: JwtRepository
 ) : OncePerRequestFilter() {
 
     @Throws(ServletException::class, IOException::class)
@@ -50,6 +51,13 @@ class TokenAuthenticationFilter(
         } catch (e: ExpiredJwtException) {
 
             println("TokenAuthenticationFilter: Expired Token - ${e.message}")
+
+            val claims = e.claims
+            val userId = claims["id"] as? Long
+            if (userId != null) {
+                jwtRepository.deleteById(userId)
+            }
+
             throw JwtException("Expired token, 토큰 기한 만료")
 
         } catch (e: SignatureException) {
