@@ -39,6 +39,7 @@ class AttendanceService(
         if (now.hour !in listOf(8, 12, 18)) {
             throw Exceptions(
                 ErrorCode.NOT_ATTENDANCE_TIME
+
             )
         }
 
