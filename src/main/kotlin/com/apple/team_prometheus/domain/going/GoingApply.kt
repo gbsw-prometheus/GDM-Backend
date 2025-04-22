@@ -36,5 +36,6 @@ data class GoingApply(
         outDateTime = LocalDate.now(),
         inDateTime = LocalDate.now(),
         title = "",
-        content = "")
+        content = ""
+    )
 }

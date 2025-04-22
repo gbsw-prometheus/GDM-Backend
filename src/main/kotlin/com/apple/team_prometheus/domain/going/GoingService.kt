@@ -23,6 +23,35 @@ class GoingService(
         }
     }
 
+    fun findById(id: Long): GoingApply {
+        val goingApply = goingRepository.findById(id).orElseThrow {
+            Exceptions(
+                ErrorCode.GOING_NOT_FOUND
+            )
+        }
+
+        return goingApply.let {
+            GoingApply(
+                user = it.user,
+                going = it.going,
+                outDateTime = it.outDateTime,
+                inDateTime = it.inDateTime,
+                title = it.title,
+                content = it.content
+            )
+        }
+    }
+
+    fun deleteGoing(id: Long) {
+        val goingApply = goingRepository.findById(id).orElseThrow {
+            Exceptions(
+                ErrorCode.GOING_NOT_FOUND
+            )
+        }
+
+        goingRepository.delete(goingApply)
+    }
+
     fun registrationGoing(goingRequest: GoingDto.GoingRequest): GoingDto.GoingResponse {
         if (goingRequest.outDateTime.isBefore(java.time.LocalDate.now()) ||
             goingRequest.inDateTime.isBefore(java.time.LocalDate.now()) ||
