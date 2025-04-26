@@ -113,10 +113,10 @@ class AuthService(
 
     // 리프레시 토큰으로 액세스 토큰 갱신 (회전 적용)
     @Transactional
-    fun refreshAccessToken(request: CreateAccessTokenByRefreshToken): AccessToken.Response {
+    fun refreshAccessToken(request: String): AccessToken.Response {
         try {
             // 1. 리프레시 토큰 검증
-            val claims = jwtProvider.getClaims(request.refreshToken)
+            val claims = jwtProvider.getClaims(request)
             if (claims["type"] != "Refresh") {
                 throw Exceptions(
                     errorCode = ErrorCode.INVALID_TOKEN
@@ -140,7 +140,7 @@ class AuthService(
                 }
 
             // 저장된 리프레시 토큰과 요청된 리프레시 토큰이 일치하는지 확인
-            if (storedToken.refreshToken != request.refreshToken) {
+            if (storedToken.refreshToken != request) {
                 throw Exceptions(
                     errorCode = ErrorCode.INVALID_TOKEN
                 )

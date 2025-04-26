@@ -31,6 +31,7 @@ class SecurityConfig(
                     //.requestMatchers("/auth/join").hasRole("TEACHER")
                     .requestMatchers(
                         AntPathRequestMatcher("/api/going/**"),
+                        AntPathRequestMatcher("/api/attendance/no-attendance"),
                     ).hasRole("TEACHER")
                     .requestMatchers(
                         AntPathRequestMatcher("/auth/join"),
