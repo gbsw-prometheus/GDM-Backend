@@ -4,7 +4,10 @@ import com.apple.team_prometheus.global.jwt.AccessToken
 import com.apple.team_prometheus.global.jwt.CreateAccessTokenByRefreshToken
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
+import jakarta.servlet.http.Cookie
+import jakarta.servlet.http.HttpServletResponse
 import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.CookieValue
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -20,11 +23,23 @@ class AuthController(val authService: AuthService) {
     @PostMapping(value = ["/login"])
     @Operation(summary = "로그인")
     fun login(
-        @RequestBody loginDto: AuthLoginDto.Request
+        @RequestBody loginDto: AuthLoginDto.Request,
+        response: HttpServletResponse
     ): ResponseEntity<AuthLoginDto.Response> {
 
+        val userResponse: AuthLoginDto.Response = authService.userLogin(loginDto)
+
+        val cookie: Cookie = Cookie("refreshToken", userResponse.token.refreshToken)
+        cookie.isHttpOnly = true
+        cookie.secure = true
+        cookie.path = "/"
+        cookie.maxAge = 60 * 60 * 24 * 7 // 7 days
+        cookie.attributes["SameSite"] = "None"
+        response.addCookie(cookie)
+
+
         return ResponseEntity.ok(
-            authService.userLogin(loginDto)
+            userResponse
         )
     }
 
@@ -42,8 +57,9 @@ class AuthController(val authService: AuthService) {
     @PostMapping(value = ["/login/token"])
     @Operation(summary = "Access Token 재발급")
     fun tokenRefresh(
-        @RequestBody refreshToken: CreateAccessTokenByRefreshToken
+        @CookieValue(value = "refreshToken", required = false) refreshToken: String
     ): ResponseEntity<AccessToken.Response> {
+
 
         return ResponseEntity.ok(
             authService.refreshAccessToken(refreshToken)

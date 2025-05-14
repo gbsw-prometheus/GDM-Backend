@@ -7,7 +7,7 @@ class AuthLoginDto {
 
     data class Response(
         var name: String,
-        var accessToken: AccessToken.Response
+        var token: AccessToken.Response
     )
 
     data class Request (
