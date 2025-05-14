@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.servlet.http.Cookie
 import jakarta.servlet.http.HttpServletResponse
+import org.springframework.http.ResponseCookie
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.CookieValue
 import org.springframework.web.bind.annotation.GetMapping
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import java.time.Duration
 
 
 @RestController
@@ -29,13 +31,25 @@ class AuthController(val authService: AuthService) {
 
         val userResponse: AuthLoginDto.Response = authService.userLogin(loginDto)
 
-        val cookie: Cookie = Cookie("refreshToken", userResponse.token.refreshToken)
-        cookie.isHttpOnly = true
-        cookie.secure = true
-        cookie.path = "/"
-        cookie.maxAge = 60 * 60 * 24 * 7 // 7 days
-        cookie.attributes["SameSite"] = "None"
-        response.addCookie(cookie)
+        val cookie = userResponse.token.refreshToken?.let {
+            Cookie("refreshToken", it).apply {
+                isHttpOnly = true
+                secure = true
+                path = "/"
+                maxAge = Duration.ofDays(7).seconds.toInt()
+            }
+        }
+        cookie?.let { response.addCookie(it) }
+
+        val accessTokenCookie = userResponse.token.accessToken?.let {
+            Cookie("accessToken", it).apply {
+                isHttpOnly = true
+                secure = true
+                path = "/"
+                maxAge = Duration.ofMinutes(15).seconds.toInt() // Access Token의 만료 시간에 맞게 설정
+            }
+        }
+        accessTokenCookie?.let { response.addCookie(it) }
 
 
         return ResponseEntity.ok(
@@ -57,13 +71,23 @@ class AuthController(val authService: AuthService) {
     @PostMapping(value = ["/login/token"])
     @Operation(summary = "Access Token 재발급")
     fun tokenRefresh(
-        @CookieValue(value = "refreshToken", required = false) refreshToken: String
+        @CookieValue(value = "refreshToken", required = false) refreshToken: String,
+        response: HttpServletResponse
     ): ResponseEntity<AccessToken.Response> {
 
+        val accessTokenResponse = authService.refreshAccessToken(refreshToken)
 
-        return ResponseEntity.ok(
-            authService.refreshAccessToken(refreshToken)
-        )
+        accessTokenResponse.accessToken?.let {
+            val accessTokenCookie = Cookie("accessToken", it).apply {
+                isHttpOnly = true
+                secure = true
+                path = "/"
+                maxAge = Duration.ofMinutes(15).seconds.toInt()
+            }
+            response.addCookie(accessTokenCookie)
+        }
+
+        return ResponseEntity.ok(accessTokenResponse)
     }
 
 
