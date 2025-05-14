@@ -77,6 +77,16 @@ class AuthController(val authService: AuthService) {
 
         val accessTokenResponse = authService.refreshAccessToken(refreshToken)
 
+        accessTokenResponse.refreshToken?.let {
+            val refreshTokenCookie = Cookie("refreshToken", it).apply {
+                isHttpOnly = true
+                secure = true
+                path = "/"
+                maxAge = Duration.ofDays(7).seconds.toInt()
+            }
+            response.addCookie(refreshTokenCookie)
+        }
+
         accessTokenResponse.accessToken?.let {
             val accessTokenCookie = Cookie("accessToken", it).apply {
                 isHttpOnly = true
