@@ -1,6 +1,6 @@
-package com.apple.team_prometheus.domain.going
+package com.apple.team_prometheus.domain.going.entity
 
-import com.apple.team_prometheus.domain.auth.AuthUser
+import com.apple.team_prometheus.domain.auth.entity.AuthUser
 import jakarta.persistence.*
 import java.time.LocalDate
 

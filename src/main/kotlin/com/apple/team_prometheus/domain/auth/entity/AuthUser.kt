@@ -1,8 +1,8 @@
-package com.apple.team_prometheus.domain.auth
+package com.apple.team_prometheus.domain.auth.entity
 
-import com.apple.team_prometheus.domain.attendance.Attendance
-import com.apple.team_prometheus.domain.attendance.NoAttendance
-import com.apple.team_prometheus.domain.going.GoingApply
+import com.apple.team_prometheus.domain.attendance.entity.Attendance
+import com.apple.team_prometheus.domain.attendance.entity.NoAttendance
+import com.apple.team_prometheus.domain.going.entity.GoingApply
 import com.fasterxml.jackson.annotation.JsonIgnore
 import jakarta.persistence.*
 import java.time.LocalDate

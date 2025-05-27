@@ -1,8 +1,14 @@
-package com.apple.team_prometheus.domain.attendance
+package com.apple.team_prometheus.domain.attendance.service
 
-import com.apple.team_prometheus.domain.auth.AuthRepository
-import com.apple.team_prometheus.domain.auth.AuthUser
-import com.apple.team_prometheus.domain.auth.Role
+import com.apple.team_prometheus.domain.attendance.entity.NoAttendance
+import com.apple.team_prometheus.domain.attendance.repository.NoAttendanceRepository
+import com.apple.team_prometheus.domain.attendance.entity.Status
+import com.apple.team_prometheus.domain.attendance.dto.AttendanceDto
+import com.apple.team_prometheus.domain.attendance.entity.Attendance
+import com.apple.team_prometheus.domain.attendance.repository.AttendanceRepository
+import com.apple.team_prometheus.domain.auth.repository.AuthRepository
+import com.apple.team_prometheus.domain.auth.entity.AuthUser
+import com.apple.team_prometheus.domain.auth.entity.Role
 import com.apple.team_prometheus.global.exception.ErrorCode
 import com.apple.team_prometheus.global.exception.Exceptions
 import org.springframework.scheduling.annotation.Scheduled

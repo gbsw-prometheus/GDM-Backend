@@ -1,5 +1,6 @@
-package com.apple.team_prometheus.domain.auth
+package com.apple.team_prometheus.domain.auth.repository
 
+import com.apple.team_prometheus.domain.auth.entity.AuthUser
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.query.Param

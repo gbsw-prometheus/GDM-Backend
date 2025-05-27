@@ -1,7 +1,10 @@
-package com.apple.team_prometheus.domain.going
+package com.apple.team_prometheus.domain.going.service
 
-import com.apple.team_prometheus.domain.auth.AuthRepository
-import com.apple.team_prometheus.domain.auth.AuthUser
+import com.apple.team_prometheus.domain.auth.repository.AuthRepository
+import com.apple.team_prometheus.domain.auth.entity.AuthUser
+import com.apple.team_prometheus.domain.going.repository.GoingRepository
+import com.apple.team_prometheus.domain.going.dto.GoingDto
+import com.apple.team_prometheus.domain.going.entity.GoingApply
 import com.apple.team_prometheus.global.exception.ErrorCode
 import com.apple.team_prometheus.global.exception.Exceptions
 import org.springframework.stereotype.Service

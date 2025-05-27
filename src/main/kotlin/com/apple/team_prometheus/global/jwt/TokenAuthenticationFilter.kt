@@ -26,11 +26,19 @@ class TokenAuthenticationFilter(
         response: HttpServletResponse,
         filterChain: FilterChain
     ) {
-        val HEADER = "Authorization"
-        val authorizationHeader = request.getHeader(HEADER)
-        val token = getAccessToken(authorizationHeader)
+
+        val COOKIE_NAME = "accessToken"
+
+        val cookies = request.cookies
+
+        val token = cookies?.firstOrNull {
+            it.name == COOKIE_NAME
+        }
+            ?.value
+
         println("TokenAuthenticationFilter: Processing ${request.requestURI}")
-        println("Authorization Header: $authorizationHeader")
+        println("Extracted Token from Cookie: $token")
+        println("TokenAuthenticationFilter: Processing ${request.requestURI}")
         println("Extracted Token: $token")
 
         try {
@@ -70,6 +78,7 @@ class TokenAuthenticationFilter(
 
     private fun getAccessToken(authorizationHeader: String?): String? {
         val PREFIX = "Bearer "
+
         return if (authorizationHeader != null && authorizationHeader.startsWith(PREFIX)) {
             authorizationHeader.substring(PREFIX.length)
         } else {

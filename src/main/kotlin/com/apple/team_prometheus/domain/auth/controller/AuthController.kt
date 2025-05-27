@@ -1,12 +1,14 @@
-package com.apple.team_prometheus.domain.auth
+package com.apple.team_prometheus.domain.auth.controller
 
+import com.apple.team_prometheus.domain.auth.dto.AuthJoinDto
+import com.apple.team_prometheus.domain.auth.dto.AuthLoginDto
+import com.apple.team_prometheus.domain.auth.service.AuthService
+import com.apple.team_prometheus.domain.auth.entity.AuthUser
 import com.apple.team_prometheus.global.jwt.AccessToken
-import com.apple.team_prometheus.global.jwt.CreateAccessTokenByRefreshToken
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.servlet.http.Cookie
 import jakarta.servlet.http.HttpServletResponse
-import org.springframework.http.ResponseCookie
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.CookieValue
 import org.springframework.web.bind.annotation.GetMapping

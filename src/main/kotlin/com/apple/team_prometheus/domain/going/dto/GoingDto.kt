@@ -1,6 +1,6 @@
-package com.apple.team_prometheus.domain.going
+package com.apple.team_prometheus.domain.going.dto
 
-import com.apple.team_prometheus.domain.auth.AuthUser
+import com.apple.team_prometheus.domain.auth.entity.AuthUser
 import java.time.LocalDate
 
 

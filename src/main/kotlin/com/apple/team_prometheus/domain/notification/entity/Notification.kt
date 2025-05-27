@@ -1,4 +1,4 @@
-package com.apple.team_prometheus.domain.notification
+package com.apple.team_prometheus.domain.notification.entity
 
 import jakarta.persistence.Column
 import jakarta.persistence.Entity

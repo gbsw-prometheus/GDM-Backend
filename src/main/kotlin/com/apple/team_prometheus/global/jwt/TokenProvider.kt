@@ -1,7 +1,7 @@
 package com.apple.team_prometheus.global.jwt
 
 
-import com.apple.team_prometheus.domain.auth.AuthUser
+import com.apple.team_prometheus.domain.auth.entity.AuthUser
 import io.jsonwebtoken.*
 import io.jsonwebtoken.security.Keys
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken

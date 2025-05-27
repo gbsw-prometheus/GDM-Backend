@@ -1,6 +1,7 @@
-package com.apple.team_prometheus.domain.attendance
+package com.apple.team_prometheus.domain.attendance.dto
 
-import com.apple.team_prometheus.domain.auth.AuthUser
+import com.apple.team_prometheus.domain.attendance.entity.Status
+import com.apple.team_prometheus.domain.auth.entity.AuthUser
 import java.time.LocalDateTime
 
 class AttendanceDto {
