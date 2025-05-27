@@ -1,5 +1,8 @@
-package com.apple.team_prometheus.domain.attendance
+package com.apple.team_prometheus.domain.attendance.controller
 
+import com.apple.team_prometheus.domain.attendance.dto.AttendanceDto
+import com.apple.team_prometheus.domain.attendance.service.AttendanceService
+import com.apple.team_prometheus.domain.attendance.entity.NoAttendance
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.http.ResponseEntity

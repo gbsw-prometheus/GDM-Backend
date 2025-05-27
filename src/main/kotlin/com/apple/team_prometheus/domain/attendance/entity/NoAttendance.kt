@@ -1,6 +1,6 @@
-package com.apple.team_prometheus.domain.attendance
+package com.apple.team_prometheus.domain.attendance.entity
 
-import com.apple.team_prometheus.domain.auth.AuthUser
+import com.apple.team_prometheus.domain.auth.entity.AuthUser
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.GeneratedValue

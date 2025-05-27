@@ -1,4 +1,4 @@
-package com.apple.team_prometheus.domain.auth
+package com.apple.team_prometheus.domain.auth.dto
 
 import jakarta.validation.constraints.NotBlank
 

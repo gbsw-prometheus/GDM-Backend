@@ -1,5 +1,8 @@
-package com.apple.team_prometheus.domain.going
+package com.apple.team_prometheus.domain.going.controller
 
+import com.apple.team_prometheus.domain.going.dto.GoingDto
+import com.apple.team_prometheus.domain.going.service.GoingService
+import com.apple.team_prometheus.domain.going.entity.GoingApply
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.web.bind.annotation.DeleteMapping

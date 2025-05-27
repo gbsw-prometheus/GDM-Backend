@@ -1,7 +1,12 @@
-package com.apple.team_prometheus.domain.auth
+package com.apple.team_prometheus.domain.auth.service
 
-import com.apple.team_prometheus.domain.attendance.Attendance
-import com.apple.team_prometheus.domain.attendance.Status
+import com.apple.team_prometheus.domain.attendance.entity.Attendance
+import com.apple.team_prometheus.domain.attendance.entity.Status
+import com.apple.team_prometheus.domain.auth.entity.Role
+import com.apple.team_prometheus.domain.auth.dto.AuthJoinDto
+import com.apple.team_prometheus.domain.auth.dto.AuthLoginDto
+import com.apple.team_prometheus.domain.auth.entity.AuthUser
+import com.apple.team_prometheus.domain.auth.repository.AuthRepository
 import com.apple.team_prometheus.global.exception.ErrorCode
 import com.apple.team_prometheus.global.exception.Exceptions
 import com.apple.team_prometheus.global.jwt.*
