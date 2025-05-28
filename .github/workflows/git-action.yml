@@ -1,0 +1,23 @@
+name: Docker Image CI
+
+on:
+  push:
+    branches: ["main"]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Login Github Container Registry
+        env:
+          GHCR_USERNAME: ${{secrets.GHCR_USERNAME}}
+          GHCR_PASSWORD: ${{secrets.GHCR_PASSWORD}}
+
+        run: docker login ghcr.io -u $GHCR_USERNAME --password $GHCR_PASSWORD
+      - name: Build the Docker image
+        run: docker build -t gdm-server .
+      - name: taging
+        run: docker tag gdm-server:latest ghcr.io/wlstmd/gdm-server:latest
+      - name: Push to Dockerhub
+        run: docker push ghcr.io/wlstmd/gdm-server:latest
