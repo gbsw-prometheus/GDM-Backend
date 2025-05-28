@@ -19,19 +19,29 @@ repositories {
 }
 
 dependencies {
+
+	// default
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 	implementation("org.springframework.boot:spring-boot-starter-security")
 	implementation("org.springframework.boot:spring-boot-starter-web")
 	implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
+	implementation("com.google.firebase:firebase-admin:9.4.3")
 	runtimeOnly("com.mysql:mysql-connector-j")
+
+	// test
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
 	testImplementation("org.springframework.security:spring-security-test")
+	testImplementation ("com.h2database:h2")
+	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+
+	// jwt
 	implementation("io.jsonwebtoken:jjwt-api:0.11.5")
 	implementation("io.jsonwebtoken:jjwt-impl:0.11.5")
 	implementation("io.jsonwebtoken:jjwt-jackson:0.11.5")
-	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+
+	// swagger
 	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.2")
 }
 

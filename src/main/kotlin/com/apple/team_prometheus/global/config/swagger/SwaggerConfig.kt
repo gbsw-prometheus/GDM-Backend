@@ -1,4 +1,4 @@
-package com.apple.team_prometheus.global.swagger
+package com.apple.team_prometheus.global.config.swagger
 
 import io.swagger.v3.oas.models.Components
 import io.swagger.v3.oas.models.OpenAPI
