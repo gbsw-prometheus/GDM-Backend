@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.servlet.http.Cookie
 import jakarta.servlet.http.HttpServletResponse
+import jakarta.validation.Valid
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.CookieValue
 import org.springframework.web.bind.annotation.GetMapping
@@ -27,7 +28,7 @@ class AuthController(val authService: AuthService) {
     @PostMapping(value = ["/login"])
     @Operation(summary = "로그인")
     fun login(
-        @RequestBody loginDto: AuthLoginDto.Request,
+        @Valid @RequestBody loginDto: AuthLoginDto.Request,
         response: HttpServletResponse
     ): ResponseEntity<AuthLoginDto.Response> {
 
@@ -62,7 +63,7 @@ class AuthController(val authService: AuthService) {
     @PostMapping(value = ["/join"])
     @Operation(summary = "회원가입")
     fun join(
-        @RequestBody joinDto: AuthJoinDto.Request
+        @Valid @RequestBody joinDto: AuthJoinDto.Request
     ): ResponseEntity<AuthJoinDto.Response> {
 
         return  ResponseEntity.ok(

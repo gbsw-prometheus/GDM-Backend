@@ -26,7 +26,7 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-web")
 	implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
-	implementation("com.google.firebase:firebase-admin:9.4.3")
+	implementation("com.google.firebase:firebase-admin:9.2.0")
 	runtimeOnly("com.mysql:mysql-connector-j")
 
 	// test
