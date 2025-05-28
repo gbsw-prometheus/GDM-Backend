@@ -1,4 +1,4 @@
-package com.apple.team_prometheus.global.security
+package com.apple.team_prometheus.global.config.security
 
 import com.apple.team_prometheus.global.jwt.TokenAuthenticationFilter
 import com.apple.team_prometheus.global.jwt.TokenExceptionFilter

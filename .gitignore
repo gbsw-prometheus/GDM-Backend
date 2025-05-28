@@ -43,3 +43,7 @@ out/
 ### .env ###
 
 .env
+
+
+### Firebase ###
+firebaseKey/
