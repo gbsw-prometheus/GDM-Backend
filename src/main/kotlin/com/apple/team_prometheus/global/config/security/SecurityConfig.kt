@@ -39,7 +39,8 @@ class SecurityConfig(
                         AntPathRequestMatcher("/auth/login/token"),
                         AntPathRequestMatcher("/swagger-ui.html"),
                         AntPathRequestMatcher("/swagger-ui/**"),
-                        AntPathRequestMatcher("/v3/api-docs/**")
+                        AntPathRequestMatcher("/v3/api-docs/**"),
+                        AntPathRequestMatcher("/health")
                     ).permitAll()
                     .anyRequest().authenticated()
             }
