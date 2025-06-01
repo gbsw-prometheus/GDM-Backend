@@ -1,11 +1,7 @@
 package com.apple.team_prometheus.domain.notification.entity
 
 import com.apple.team_prometheus.domain.auth.entity.AuthUser
-import jakarta.persistence.Column
-import jakarta.persistence.Entity
-import jakarta.persistence.Id
-import jakarta.persistence.ManyToOne
-import jakarta.persistence.OneToMany
+import jakarta.persistence.*
 import java.time.LocalDateTime
 
 
@@ -13,18 +9,22 @@ import java.time.LocalDateTime
 class FCMToken(
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     val tokenId: Long = 0L,
 
-    @ManyToOne
+    @ManyToOne(cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
     var user: AuthUser? = null,
 
     var token: String = "",
+
+    val deviceInfo: String,
 
     var createDate: LocalDateTime = LocalDateTime.now()
 ) {
     constructor() : this(
         tokenId = 0L,
         user = AuthUser(),
+        deviceInfo = "",
         token = ""
     )
 }

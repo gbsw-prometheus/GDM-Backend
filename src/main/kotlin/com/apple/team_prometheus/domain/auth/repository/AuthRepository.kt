@@ -17,8 +17,6 @@ interface AuthRepository : JpaRepository<AuthUser?, Long?> {
 
     override fun findById(id: Long): Optional<AuthUser?>
 
-    fun findAllByFcmTokenIsNotNull(): List<AuthUser>
-
     fun findByName(name: String): Optional<AuthUser?>
 
     override fun existsById(id: Long): Boolean

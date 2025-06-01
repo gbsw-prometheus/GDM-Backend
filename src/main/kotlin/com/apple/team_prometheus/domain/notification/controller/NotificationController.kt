@@ -1,7 +1,7 @@
 package com.apple.team_prometheus.domain.notification.controller
 
-import com.apple.team_prometheus.domain.notification.dto.NotificationDto
 import com.apple.team_prometheus.domain.notification.service.NotificationService
+import com.apple.team_prometheus.domain.notification.dto.NotificationDto
 import jakarta.validation.Valid
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.PostMapping
