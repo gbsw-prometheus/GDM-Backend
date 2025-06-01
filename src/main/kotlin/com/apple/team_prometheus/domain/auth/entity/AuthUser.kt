@@ -50,9 +50,7 @@ data class AuthUser(
     val yearOfAdmission: Year,
 
     @Column(nullable = false)
-    var isGraduate: Boolean
-
-
+    var isGraduate: Boolean,
 
 ) {
     constructor() : this(

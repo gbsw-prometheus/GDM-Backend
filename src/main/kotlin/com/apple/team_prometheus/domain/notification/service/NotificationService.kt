@@ -2,33 +2,79 @@ package com.apple.team_prometheus.domain.notification.service
 
 import com.apple.team_prometheus.domain.notification.dto.NotificationDto
 import com.apple.team_prometheus.domain.notification.entity.Notification
+import com.apple.team_prometheus.domain.notification.repository.FCMTokenRepository
 import com.apple.team_prometheus.domain.notification.repository.NotificationRepository
+import com.google.firebase.messaging.FirebaseMessaging
+import com.google.firebase.messaging.FirebaseMessagingException
+import com.google.firebase.messaging.Message
+import org.springframework.core.task.TaskExecutor
 import org.springframework.stereotype.Service
-
+import java.time.LocalDate
 
 @Service
 class NotificationService(
-    private val notificationRepository: NotificationRepository
+    private val notificationRepository: NotificationRepository,
+    private val firebaseMessaging: FirebaseMessaging,
+    private val taskExecutor: TaskExecutor,
+    private val fcmTokenRepository: FCMTokenRepository
 ) {
 
     fun createNotification(request: NotificationDto.Request): NotificationDto.Response {
-
-        val notification: Notification = Notification(
+        val notification = Notification(
             title = request.title,
             detail = request.detail,
             author = "System",
-            dueDate = java.time.LocalDate.now()
-        )
+            dueDate = LocalDate.now()
+        ).let(notificationRepository::save)
 
-        val saved = notificationRepository.save(notification)
+        // 비동기로 푸시 알림 전송
+        taskExecutor.execute {
+            fcmTokenRepository.findAll() // 모든 FCM 토큰 조회
+                .map { it.token }
+                .forEach { token ->
+                    try {
+                        sendPushMessage(token, request)
+                    } catch (e: FirebaseMessagingException) {
+                        when (e.errorCode.toString()) {
+                            "invalid-argument" -> {
+                                fcmTokenRepository.deleteByToken(token)
+                            }
+                            "invalid-registration-token" -> {
+                                fcmTokenRepository.deleteByToken(token)
+                            }
+                            else -> {
+                                println("푸시 전송 실패 (토큰: $token): ${e.message}")
+                            }
+                        }
+                    } catch (e: Exception) {
+                        println("알 수 없는 오류 (토큰: $token): ${e.message}")
+                    }
+                }
+        }
 
         return NotificationDto.Response(
-            id = saved.id,
-            title = saved.title,
-            detail = saved.detail,
-            dueDate = saved.dueDate,
-            author = saved.author
+            id = notification.id,
+            title = notification.title,
+            detail = notification.detail,
+            author = notification.author,
+            dueDate = notification.dueDate
         )
     }
+
+    @Throws(FirebaseMessagingException::class)
+    fun sendPushMessage(targetToken: String, request: NotificationDto.Request) {
+        val message = Message.builder()
+            .setToken(targetToken)
+            .setNotification(
+                com.google.firebase.messaging.Notification.builder()
+                    .setTitle(request.title)
+                    .setBody(request.detail)
+                    .build()
+            )
+            .build()
+
+        firebaseMessaging.send(message)
+    }
+
 
 }

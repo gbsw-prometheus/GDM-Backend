@@ -7,6 +7,7 @@ import com.apple.team_prometheus.domain.auth.dto.AuthJoinDto
 import com.apple.team_prometheus.domain.auth.dto.AuthLoginDto
 import com.apple.team_prometheus.domain.auth.entity.AuthUser
 import com.apple.team_prometheus.domain.auth.repository.AuthRepository
+import com.apple.team_prometheus.domain.notification.service.FCMTokenService
 import com.apple.team_prometheus.global.exception.ErrorCode
 import com.apple.team_prometheus.global.exception.Exceptions
 import com.apple.team_prometheus.global.jwt.*
@@ -26,7 +27,8 @@ class AuthService(
     private val passwordEncoder: PasswordEncoder,
     private val jwtProperties: JwtProperties,
     private val jwtProvider: TokenProvider,
-    private val jwtRepository: JwtRepository
+    private val jwtRepository: JwtRepository,
+    private val fcmTokenService: FCMTokenService
 ) {
 
     fun findAllUsers(): List<AuthUser?> {
@@ -90,6 +92,15 @@ class AuthService(
         }
 
         val token = createAccessToken(user)
+
+        loginDto.fcmToken?.let {
+            fcmTokenService.saveToken(
+                user = user,
+                token = it,
+                deviceInfo = "Unknown Device" // 실제 디바이스 정보는 클라이언트에서 제공해야 함
+            )
+        }
+
         return AuthLoginDto.Response(user.name, token)
     }
 
