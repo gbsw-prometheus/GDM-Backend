@@ -7,6 +7,7 @@ import com.apple.team_prometheus.domain.notification.repository.NotificationRepo
 import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.messaging.FirebaseMessagingException
 import com.google.firebase.messaging.Message
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.core.task.TaskExecutor
 import org.springframework.stereotype.Service
 import java.time.LocalDate
@@ -15,7 +16,7 @@ import java.time.LocalDate
 class NotificationService(
     private val notificationRepository: NotificationRepository,
     private val firebaseMessaging: FirebaseMessaging,
-    private val taskExecutor: TaskExecutor,
+    @Qualifier("taskExecutor") private val taskExecutor: TaskExecutor,
     private val fcmTokenRepository: FCMTokenRepository
 ) {
 

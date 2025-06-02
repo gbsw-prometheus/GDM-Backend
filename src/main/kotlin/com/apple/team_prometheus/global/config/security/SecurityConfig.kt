@@ -13,11 +13,11 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher
 
 
-
 @Configuration
 class SecurityConfig(
     private val tokenAuthenticationFilter: TokenAuthenticationFilter,
-    private val tokenExceptionFilter: TokenExceptionFilter) {
+    private val tokenExceptionFilter: TokenExceptionFilter
+) {
 
     @Bean
     @Throws(Exception::class)
@@ -48,7 +48,6 @@ class SecurityConfig(
             .addFilterBefore(tokenExceptionFilter, TokenAuthenticationFilter::class.java)
         return httpSecurity.build();
     }
-
 
     @Bean
     fun passwordEncoder(): PasswordEncoder{
