@@ -1,0 +1,42 @@
+name: CD Pipeline
+on:
+  workflow_run:
+    workflows: ["Docker Image CI"]
+    types:
+      - completed
+jobs:
+  build:
+    runs-on: self-hosted
+    steps:
+      - name: Create Firebase key file
+        run: |
+          sudo mkdir -p /app/firebaseKey
+          echo "${{ secrets.FIREBASE_SERVICE_ACCOUNT_KEY }}" | sudo tee /app/firebaseKey/firebase-service-account.json
+          sudo chmod 600 /app/firebaseKey/firebase-service-account.json
+          sudo chown ec2-user:ec2-user /app/firebaseKey/firebase-service-account.json
+      - name: Pull Docker image
+        run: sudo docker pull ghcr.io/wlstmd/gdm-server:latest
+      - name: Delete Old docker container
+        run: sudo docker rm -f gdm-server || true
+      - name: Run Docker Container
+        env:
+          DB_URL: ${{secrets.DB_URL}}
+          DB_USERNAME: ${{secrets.DB_USERNAME}}
+          DB_PASSWORD: ${{secrets.DB_PASSWORD}}
+          JWT_ISSUER: ${{secrets.JWT_ISSUER}}
+          JWT_KEY: ${{secrets.JWT_KEY}}
+          ACCESS_TOKEN_EXPIRE_TIME: ${{secrets.ACCESS_TOKEN_EXPIRE_TIME}}
+          REFRESH_TOKEN_EXPIRE_TIME: ${{secrets.REFRESH_TOKEN_EXPIRE_TIME}}
+          FIREBASE_KEY_PATH: /app/firebaseKey/firebase-service-account.json
+        run: |
+          sudo docker run -d \
+            -e DB_URL=$DB_URL \
+            -e DB_USERNAME=$DB_USERNAME \
+            -e DB_PASSWORD=$DB_PASSWORD \
+            -e JWT_ISSUER=$JWT_ISSUER \
+            -e JWT_KEY=$JWT_KEY \
+            -e ACCESS_TOKEN_EXPIRE_TIME=$ACCESS_TOKEN_EXPIRE_TIME \
+            -e REFRESH_TOKEN_EXPIRE_TIME=$REFRESH_TOKEN_EXPIRE_TIME \
+            -e FIREBASE_KEY_PATH=$FIREBASE_KEY_PATH \
+            -v /app/firebaseKey:/app/firebaseKey \
+            -p 8080:8080 --name gdm-server ghcr.io/wlstmd/gdm-server
