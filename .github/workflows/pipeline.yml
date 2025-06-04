@@ -1,13 +1,45 @@
-name: CD Pipeline
+name: CI/CD using GitHub Actions & Docker
 on:
-  workflow_run:
-    workflows: ["Docker Image CI"]
-    types:
-      - completed
+  push:
+    branches: [ "develop" ]
+
 jobs:
-  build:
+  ci-cd:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v3
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: Set executable permission for gradlew
+        run: chmod +x ./gradlew
+
+      - name: Build with Gradle
+        run: ./gradlew build -x test
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push Docker image
+        run: |
+          docker build -t ghcr.io/wlstmd/gdm-server:latest .
+          docker push ghcr.io/wlstmd/gdm-server:latest
+
+  deploy:
+    needs: ci-cd
     runs-on: self-hosted
     steps:
+      - name: Mask Firebase key
+        run: echo "::add-mask::${{ secrets.FIREBASE_SERVICE_ACCOUNT_KEY }}"
       - name: Create Firebase key file
         run: |
           sudo mkdir -p /app/firebaseKey
@@ -16,9 +48,9 @@ jobs:
           sudo chown ec2-user:ec2-user /app/firebaseKey/firebase-service-account.json
       - name: Pull Docker image
         run: sudo docker pull ghcr.io/wlstmd/gdm-server:latest
-      - name: Delete Old docker container
+      - name: Delete old Docker container
         run: sudo docker rm -f gdm-server || true
-      - name: Run Docker Container
+      - name: Run Docker container
         env:
           DB_URL: ${{secrets.DB_URL}}
           DB_USERNAME: ${{secrets.DB_USERNAME}}
@@ -39,4 +71,4 @@ jobs:
             -e REFRESH_TOKEN_EXPIRE_TIME=$REFRESH_TOKEN_EXPIRE_TIME \
             -e FIREBASE_KEY_PATH=$FIREBASE_KEY_PATH \
             -v /app/firebaseKey:/app/firebaseKey \
-            -p 8080:8080 --name gdm-server ghcr.io/wlstmd/gdm-server
+            -p 8080:8080 --name gdm-server ghcr.io/wlstmd/gdm-server:latest
