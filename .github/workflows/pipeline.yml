@@ -30,7 +30,7 @@ jobs:
         run: docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
 
       - name: Build the Docker image
-        run: docker build -t gdm-server .
+        run: docker build --platform linux/arm64 -t gdm-server .
 
       - name: Tag Docker image
         run: docker tag gdm-server:latest jinseung0327/gdm-server:latest
