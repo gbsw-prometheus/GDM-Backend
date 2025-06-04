@@ -1,4 +1,5 @@
 name: CI/CD using GitHub Actions & Docker
+
 on:
   push:
     branches: [ "develop" ]
@@ -22,17 +23,20 @@ jobs:
       - name: Build with Gradle
         run: ./gradlew build -x test
 
-      - name: Log in to GHCR
-        uses: docker/login-action@v2
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Login DockerHub
+        env:
+          DOCKER_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}
+        run: docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
 
-      - name: Build and push Docker image
-        run: |
-          docker build -t ghcr.io/wlstmd/gdm-server:latest .
-          docker push ghcr.io/wlstmd/gdm-server:latest
+      - name: Build the Docker image
+        run: docker build -t gdm-server .
+
+      - name: Tag Docker image
+        run: docker tag gdm-server:latest jinseung0327/gdm-server:latest
+
+      - name: Push to DockerHub
+        run: docker push jinseung0327/gdm-server:latest
 
   deploy:
     needs: ci-cd
@@ -47,7 +51,7 @@ jobs:
           sudo chmod 600 /app/firebaseKey/firebase-service-account.json
           sudo chown ec2-user:ec2-user /app/firebaseKey/firebase-service-account.json
       - name: Pull Docker image
-        run: sudo docker pull ghcr.io/wlstmd/gdm-server:latest
+        run: sudo docker pull jinseung0327/gdm-server:latest
       - name: Delete old Docker container
         run: sudo docker rm -f gdm-server || true
       - name: Run Docker container
@@ -71,4 +75,4 @@ jobs:
             -e REFRESH_TOKEN_EXPIRE_TIME=$REFRESH_TOKEN_EXPIRE_TIME \
             -e FIREBASE_KEY_PATH=$FIREBASE_KEY_PATH \
             -v /app/firebaseKey:/app/firebaseKey \
-            -p 8080:8080 --name gdm-server ghcr.io/wlstmd/gdm-server:latest
+            -p 8080:8080 --name gdm-server jinseung0327/gdm-server:latest
