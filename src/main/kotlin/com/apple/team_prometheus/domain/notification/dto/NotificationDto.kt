@@ -13,6 +13,12 @@ class NotificationDto {
         val author: String,
     )
 
+    data class ResponseWithPage(
+        val content: List<Response>,
+        val totalPages: Int,
+        val size: Int,
+    )
+
     data class Request(
 
         @NotBlank

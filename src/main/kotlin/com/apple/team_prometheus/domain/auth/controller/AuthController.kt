@@ -22,7 +22,7 @@ import java.time.Duration
 
 @RestController
 @RequestMapping(value = ["/api/auth"])
-@Tag(name = "Auth")
+@Tag(name = "Auth", description = "회원가입 관련 API")
 class AuthController(val authService: AuthService) {
 
     @PostMapping(value = ["/login"])
