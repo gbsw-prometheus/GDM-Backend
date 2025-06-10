@@ -33,6 +33,7 @@ class SecurityConfig(
                     .requestMatchers(
                         AntPathRequestMatcher("/api/going/**"),
                         AntPathRequestMatcher("/api/attendance/no-attendance"),
+                        AntPathRequestMatcher("/api/notifications/**"),
                     ).hasRole("TEACHER")
                     .requestMatchers(
                         AntPathRequestMatcher("/auth/join"),

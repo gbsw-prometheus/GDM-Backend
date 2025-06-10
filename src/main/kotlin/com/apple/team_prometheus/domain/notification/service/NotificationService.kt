@@ -9,6 +9,8 @@ import com.google.firebase.messaging.FirebaseMessagingException
 import com.google.firebase.messaging.Message
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.core.task.TaskExecutor
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import java.time.LocalDate
 
@@ -77,5 +79,58 @@ class NotificationService(
         firebaseMessaging.send(message)
     }
 
+    fun updateNotification(
+        id: Long,
+        request: NotificationDto.Request
+    ): NotificationDto.Response {
+
+        val notification = notificationRepository.findById(id)
+            .orElseThrow {
+                IllegalArgumentException("Notification not found with id: $id")
+            }
+
+        notification.title = request.title
+        notification.detail = request.detail
+        notification.dueDate = LocalDate.now()
+
+        val updatedNotification = notificationRepository.save(notification)
+
+        return NotificationDto.Response(
+            id = updatedNotification.id,
+            title = updatedNotification.title,
+            detail = updatedNotification.detail,
+            author = updatedNotification.author,
+            dueDate = updatedNotification.dueDate
+        )
+    }
+
+    fun getAllNotifications(pageable: Pageable): NotificationDto.ResponseWithPage {
+        val notifications :Page<Notification> = notificationRepository.findAll(pageable)
+
+        return NotificationDto.ResponseWithPage(
+            content = notifications.content.map {
+                NotificationDto.Response(
+                    id = it.id,
+                    title = it.title,
+                    detail = it.detail,
+                    author = it.author,
+                    dueDate = it.dueDate
+                )
+            },
+            totalPages = notifications.totalPages,
+            size = notifications.size
+        )
+    }
+
+    fun deleteNotification(id: Long) {
+
+        val notification = notificationRepository.findById(id)
+            .orElseThrow {
+                IllegalArgumentException("해당 공지 찾을 수 없음: $id")
+            }
+
+        notificationRepository.delete(notification)
+
+    }
 
 }
