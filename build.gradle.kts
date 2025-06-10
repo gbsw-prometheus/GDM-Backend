@@ -30,6 +30,8 @@ dependencies {
 	runtimeOnly("com.mysql:mysql-connector-j")
 	implementation("org.springframework.boot:spring-boot-starter-validation")
 	implementation("org.hibernate.validator:hibernate-validator:8.0.1.Final")
+	implementation("org.springframework.boot:spring-boot-starter-webflux")
+
 
 	// test
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
