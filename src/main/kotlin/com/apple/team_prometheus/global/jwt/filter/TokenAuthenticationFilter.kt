@@ -1,5 +1,7 @@
-package com.apple.team_prometheus.global.jwt
+package com.apple.team_prometheus.global.jwt.filter
 
+import com.apple.team_prometheus.global.jwt.repository.JwtRepository
+import com.apple.team_prometheus.global.jwt.TokenProvider
 import io.jsonwebtoken.ExpiredJwtException
 import io.jsonwebtoken.JwtException
 import io.jsonwebtoken.security.SignatureException
@@ -10,9 +12,9 @@ import jakarta.servlet.http.HttpServletResponse
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Component
+import org.springframework.util.AntPathMatcher
 import org.springframework.web.filter.OncePerRequestFilter
 import java.io.IOException
-
 
 @Component
 class TokenAuthenticationFilter(
@@ -36,17 +38,11 @@ class TokenAuthenticationFilter(
         }
             ?.value
 
-        println("TokenAuthenticationFilter: Processing ${request.requestURI}")
-        println("Extracted Token from Cookie: $token")
-        println("TokenAuthenticationFilter: Processing ${request.requestURI}")
-        println("Extracted Token: $token")
 
         try {
             if (token != null) {
                 val authentication: Authentication = tokenProvider.getAuthentication(token)
-                println("Authorities before: ${authentication.authorities}")
                 SecurityContextHolder.getContext().authentication = authentication
-                println("Authorities after: ${SecurityContextHolder.getContext().authentication?.authorities}")
             } else {
                 println("TokenAuthenticationFilter: No token provided")
             }
@@ -73,16 +69,6 @@ class TokenAuthenticationFilter(
             println("TokenAuthenticationFilter: Signature Failed - ${e.message}")
             throw JwtException("Signature Failed. 인증실패")
 
-        }
-    }
-
-    private fun getAccessToken(authorizationHeader: String?): String? {
-        val PREFIX = "Bearer "
-
-        return if (authorizationHeader != null && authorizationHeader.startsWith(PREFIX)) {
-            authorizationHeader.substring(PREFIX.length)
-        } else {
-            null
         }
     }
 }

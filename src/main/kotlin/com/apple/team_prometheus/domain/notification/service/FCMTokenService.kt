@@ -1,6 +1,7 @@
 package com.apple.team_prometheus.domain.notification.service
 
 import com.apple.team_prometheus.domain.auth.entity.AuthUser
+import com.apple.team_prometheus.domain.notification.dto.FCM
 import com.apple.team_prometheus.domain.notification.entity.FCMToken
 import com.apple.team_prometheus.domain.notification.repository.FCMTokenRepository
 import org.springframework.stereotype.Service
@@ -14,25 +15,33 @@ class FCMTokenService(
 ) {
 
     @Transactional
-    fun saveToken(user: AuthUser, token: String, deviceInfo: String) {
+    fun saveOrUpdateToken(user: AuthUser, fcm: FCM.Request) {
 
-        val existingToken = fcmTokenRepository.findByUserAndToken(user, token)
+        val existingToken = fcmTokenRepository.findByUserAndToken(user, fcm.token)
 
         if (existingToken == null) {
 
             val newToken = FCMToken(
                 user = user,
-                token = token,
-                deviceInfo = deviceInfo,
+                token = fcm.token,
+                deviceInfo = fcm.deviceInfo ?: "Unknown Device",
                 createDate = LocalDateTime.now()
             )
 
             fcmTokenRepository.save(newToken)
         } else {
 
-            existingToken.token = token
+            existingToken.token = fcm.token
 
             fcmTokenRepository.save(existingToken)
         }
     }
+
+    fun getAllFCMTokens(): List<String> {
+        return fcmTokenRepository.findAll()
+            .map {
+                it.token
+            }
+    }
+
 }

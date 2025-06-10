@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Configuration
 
 @Configuration
 class SwaggerConfig {
-    //http://localhost:8080/swagger-ui/index.html
+    //http://localhost:8080/wlstmd
     @Bean
     fun customOpenAPI(): OpenAPI {
         return OpenAPI()
@@ -18,8 +18,8 @@ class SwaggerConfig {
 
     private fun info(): Info {
         return Info()
-            .title("Mongo Basic API")
-            .description("Mongo API reference for developers")
+            .title("유유진진승승 API")
+            .description("유진승과 성홍제를 위한 API 문서입니다.")
             .version("1.0")
     }
 }

@@ -47,3 +47,10 @@ out/
 
 ### Firebase ###
 firebaseKey/
+
+.gitignore
+
+
+### Docker ###
+docker-compose.yml
+Dockerfile

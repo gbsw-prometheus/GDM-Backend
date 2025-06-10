@@ -7,10 +7,14 @@ import com.apple.team_prometheus.domain.auth.dto.AuthJoinDto
 import com.apple.team_prometheus.domain.auth.dto.AuthLoginDto
 import com.apple.team_prometheus.domain.auth.entity.AuthUser
 import com.apple.team_prometheus.domain.auth.repository.AuthRepository
+import com.apple.team_prometheus.domain.notification.dto.FCM
 import com.apple.team_prometheus.domain.notification.service.FCMTokenService
 import com.apple.team_prometheus.global.exception.ErrorCode
 import com.apple.team_prometheus.global.exception.Exceptions
 import com.apple.team_prometheus.global.jwt.*
+import com.apple.team_prometheus.global.jwt.dto.AccessToken
+import com.apple.team_prometheus.global.jwt.entity.RefreshToken
+import com.apple.team_prometheus.global.jwt.repository.JwtRepository
 import io.jsonwebtoken.ExpiredJwtException
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
@@ -94,10 +98,12 @@ class AuthService(
         val token = createAccessToken(user)
 
         loginDto.fcmToken?.let {
-            fcmTokenService.saveToken(
+            fcmTokenService.saveOrUpdateToken(
                 user = user,
-                token = it,
-                deviceInfo = "Unknown Device" // 실제 디바이스 정보는 클라이언트에서 제공해야 함
+                fcm = FCM.Request(
+                    token = it,
+                    deviceInfo = "Unknown Device"
+                )
             )
         }
 
@@ -115,10 +121,12 @@ class AuthService(
 
         // 기존 리프레시 토큰 삭제 후 새로 저장
         jwtRepository.deleteById(user.id)
-        jwtRepository.save(RefreshToken(
+        jwtRepository.save(
+            RefreshToken(
             userId = user.id,
             refreshToken = refreshToken
-        ))
+        )
+        )
 
         return AccessToken.Response(
             result = "ok",
@@ -172,10 +180,12 @@ class AuthService(
 
             // 5. 기존 리프레시 토큰 무효화 및 새 토큰 저장
             jwtRepository.delete(storedToken)
-            jwtRepository.save(RefreshToken(
+            jwtRepository.save(
+                RefreshToken(
                 userId = user.id,
                 refreshToken = newRefreshToken
-            ))
+            )
+            )
 
 
             return AccessToken.Response(

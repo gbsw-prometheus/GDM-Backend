@@ -10,7 +10,7 @@ class NotificationDto {
         val title: String,
         val detail: String,
         val dueDate: LocalDate,
-        val author: String
+        val author: String,
     )
 
     data class Request(

@@ -4,7 +4,7 @@ import com.apple.team_prometheus.domain.auth.dto.AuthJoinDto
 import com.apple.team_prometheus.domain.auth.dto.AuthLoginDto
 import com.apple.team_prometheus.domain.auth.service.AuthService
 import com.apple.team_prometheus.domain.auth.entity.AuthUser
-import com.apple.team_prometheus.global.jwt.AccessToken
+import com.apple.team_prometheus.global.jwt.dto.AccessToken
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.servlet.http.Cookie
@@ -21,7 +21,7 @@ import java.time.Duration
 
 
 @RestController
-@RequestMapping(value = ["/auth"])
+@RequestMapping(value = ["/api/auth"])
 @Tag(name = "Auth")
 class AuthController(val authService: AuthService) {
 

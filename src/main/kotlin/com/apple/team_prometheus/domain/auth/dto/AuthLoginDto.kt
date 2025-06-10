@@ -1,7 +1,6 @@
 package com.apple.team_prometheus.domain.auth.dto
 
-import com.apple.team_prometheus.domain.notification.entity.FCMToken
-import com.apple.team_prometheus.global.jwt.AccessToken
+import com.apple.team_prometheus.global.jwt.dto.AccessToken
 
 
 class AuthLoginDto {
