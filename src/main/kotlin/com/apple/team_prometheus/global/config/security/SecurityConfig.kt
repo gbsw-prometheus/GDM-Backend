@@ -29,16 +29,15 @@ class SecurityConfig(
             .authorizeHttpRequests { auth ->
 
                 auth
-                    //.requestMatchers("/auth/join").hasRole("TEACHER")
                     .requestMatchers(
+                        AntPathRequestMatcher("/api/auth/join"),
                         AntPathRequestMatcher("/api/going/**"),
                         AntPathRequestMatcher("/api/attendance/no-attendance"),
                         AntPathRequestMatcher("/api/notifications/**"),
                     ).hasRole("TEACHER")
                     .requestMatchers(
-                        AntPathRequestMatcher("/auth/join"),
-                        AntPathRequestMatcher("/auth/login"),
-                        AntPathRequestMatcher("/auth/login/token"),
+                        AntPathRequestMatcher("/api/auth/login"),
+                        AntPathRequestMatcher("/api/auth/login/token"),
                         AntPathRequestMatcher("/wlstmd"),
                         AntPathRequestMatcher("/api/docs"),
                         AntPathRequestMatcher("/api/docs/**"),
@@ -46,7 +45,6 @@ class SecurityConfig(
                         AntPathRequestMatcher("/v3/api-docs/**"),
                         AntPathRequestMatcher("/health"),
                         AntPathRequestMatcher("/error"),
-                        AntPathRequestMatcher("/api/meals/**"),
                     ).permitAll()
             }
             .addFilterBefore(tokenAuthenticationFilter, UsernamePasswordAuthenticationFilter::class.java)

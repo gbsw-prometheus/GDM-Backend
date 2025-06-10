@@ -23,7 +23,7 @@ class GoingController(
 
      @GetMapping(value = ["/list"])
      @Operation(summary = "외출/외박 리스트 조회")
-     fun getGoingList(): List<GoingDto.GoingListResponse> {
+     fun getGoingList(): List<GoingDto.ListResponse> {
          return goingService.findAll()
      }
 
@@ -39,17 +39,17 @@ class GoingController(
     @PostMapping(value = ["/registration"])
     @Operation(summary = "외출/외박 신청")
     fun registrationGoing(
-        goingRequest: GoingDto.GoingRequest
-    ): GoingDto.GoingResponse {
+        request: GoingDto.Request
+    ): GoingDto.Response {
 
-        return goingService.registrationGoing(goingRequest)
+        return goingService.registrationGoing(request)
     }
 
     @PostMapping(value = ["/accept/{id}"])
     @Operation(summary = "외출/외박 신청 수락")
     fun acceptGoingRequest(
         @PathVariable("id") goingId: Long
-    ): GoingDto.GoingResponse {
+    ): GoingDto.Response {
         return goingService.acceptGoingRequest(goingId)
     }
 

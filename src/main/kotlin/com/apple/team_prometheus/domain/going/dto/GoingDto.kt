@@ -1,13 +1,15 @@
 package com.apple.team_prometheus.domain.going.dto
 
 import com.apple.team_prometheus.domain.auth.entity.AuthUser
+import io.swagger.v3.oas.annotations.media.Schema
 import java.time.LocalDate
 
 
 
 class GoingDto {
 
-    data class GoingRequest(
+    @Schema(name = "GoingRequest")
+    data class Request(
         val userId: Long,
         val outDateTime: LocalDate,
         val inDateTime: LocalDate,
@@ -15,13 +17,15 @@ class GoingDto {
         val content: String
     )
 
-    data class GoingResponse(
+    @Schema(name = "GoingResponse")
+    data class Response(
         val id: Long,
         val userId: AuthUser,
         val going: Boolean
     )
 
-    data class GoingListResponse(
+    @Schema(name = "GoingListResponse")
+    data class ListResponse(
         val id: Long,
         val user: AuthUser,
         val going: Boolean

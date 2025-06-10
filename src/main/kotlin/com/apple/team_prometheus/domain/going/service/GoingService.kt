@@ -16,9 +16,9 @@ class GoingService(
     private val authRepository: AuthRepository,
 ) {
 
-    fun findAll(): List<GoingDto.GoingListResponse> {
+    fun findAll(): List<GoingDto.ListResponse> {
         return goingRepository.findAll().map {
-            GoingDto.GoingListResponse(
+            GoingDto.ListResponse(
                 id = it.id,
                 user = it.user,
                 going = it.going
@@ -55,17 +55,17 @@ class GoingService(
         goingRepository.delete(goingApply)
     }
 
-    fun registrationGoing(goingRequest: GoingDto.GoingRequest): GoingDto.GoingResponse {
-        if (goingRequest.outDateTime.isBefore(java.time.LocalDate.now()) ||
-            goingRequest.inDateTime.isBefore(java.time.LocalDate.now()) ||
-            goingRequest.outDateTime.isBefore(goingRequest.inDateTime)) {
+    fun registrationGoing(request: GoingDto.Request): GoingDto.Response {
+        if (request.outDateTime.isBefore(java.time.LocalDate.now()) ||
+            request.inDateTime.isBefore(java.time.LocalDate.now()) ||
+            request.outDateTime.isBefore(request.inDateTime)) {
 
             throw Exceptions(
                 ErrorCode.INVALID_DATE_ERROR
             )
         }
 
-        val student: AuthUser? = authRepository.findById(goingRequest.userId)
+        val student: AuthUser? = authRepository.findById(request.userId)
             .orElseThrow {
                 Exceptions(
                     ErrorCode.USER_NOT_FOUND
@@ -74,15 +74,15 @@ class GoingService(
 
         val goingApply: GoingApply = GoingApply(
             user = student!!,
-            outDateTime = goingRequest.outDateTime,
-            inDateTime = goingRequest.inDateTime,
-            title = goingRequest.title,
-            content = goingRequest.content
+            outDateTime = request.outDateTime,
+            inDateTime = request.inDateTime,
+            title = request.title,
+            content = request.content
         )
 
         val saveGoingApply: GoingApply = goingRepository.save(goingApply)
 
-        val response: GoingDto.GoingResponse = GoingDto.GoingResponse(
+        val response: GoingDto.Response = GoingDto.Response(
             id = saveGoingApply.id,
             userId = saveGoingApply.user,
             going = saveGoingApply.going
@@ -92,7 +92,7 @@ class GoingService(
     }
 
 
-    fun acceptGoingRequest(goingId: Long): GoingDto.GoingResponse {
+    fun acceptGoingRequest(goingId: Long): GoingDto.Response {
         val goingApply = goingRepository.findById(goingId).orElseThrow {
             Exceptions(
                 ErrorCode.INVALID_REQUEST_ERROR
@@ -103,7 +103,7 @@ class GoingService(
         goingApply.going = true
         val updatedGoingApply = goingRepository.save(goingApply)
 
-        return GoingDto.GoingResponse(
+        return GoingDto.Response(
             id = updatedGoingApply.id,
             userId = updatedGoingApply.user,
             going = updatedGoingApply.going

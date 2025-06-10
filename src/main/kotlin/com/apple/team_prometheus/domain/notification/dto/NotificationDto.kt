@@ -1,10 +1,12 @@
 package com.apple.team_prometheus.domain.notification.dto
 
+import io.swagger.v3.oas.annotations.media.Schema
 import jakarta.validation.constraints.NotBlank
 import java.time.LocalDate
 
 class NotificationDto {
 
+    @Schema(name = "NotificationResponse")
     data class Response(
         val id: Long,
         val title: String,
@@ -13,12 +15,14 @@ class NotificationDto {
         val author: String,
     )
 
+    @Schema(name = "NotificationResponseWithPage")
     data class ResponseWithPage(
         val content: List<Response>,
         val totalPages: Int,
         val size: Int,
     )
 
+    @Schema(name = "NotificationRequest")
     data class Request(
 
         @NotBlank
