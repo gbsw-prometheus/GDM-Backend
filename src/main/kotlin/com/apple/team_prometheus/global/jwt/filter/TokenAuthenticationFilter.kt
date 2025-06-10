@@ -29,14 +29,6 @@ class TokenAuthenticationFilter(
         filterChain: FilterChain
     ) {
 
-        println(request.requestURI)
-
-        if (isPermitAllPath(request.requestURI)) {
-            println("TokenAuthenticationFilter: Permit all path - ${request.requestURI}")
-            filterChain.doFilter(request, response)
-            return
-        }
-
         val COOKIE_NAME = "accessToken"
 
         val cookies = request.cookies
@@ -46,18 +38,11 @@ class TokenAuthenticationFilter(
         }
             ?.value
 
-        println("TokenAuthenticationFilter: Processing ${request.requestURI}")
-        println("NEW")
-        println("Extracted Token from Cookie: $token")
-        println("TokenAuthenticationFilter: Processing ${request.requestURI}")
-        println("Extracted Token: $token")
 
         try {
             if (token != null) {
                 val authentication: Authentication = tokenProvider.getAuthentication(token)
-                println("Authorities before: ${authentication.authorities}")
                 SecurityContextHolder.getContext().authentication = authentication
-                println("Authorities after: ${SecurityContextHolder.getContext().authentication?.authorities}")
             } else {
                 println("TokenAuthenticationFilter: No token provided")
             }
@@ -85,18 +70,5 @@ class TokenAuthenticationFilter(
             throw JwtException("Signature Failed. 인증실패")
 
         }
-    }
-
-    private fun isPermitAllPath(path: String): Boolean {
-        val permitAllPaths = listOf(
-            "/wlstmd",
-            "/auth/login",
-            "/auth/join",
-            "/auth/login/token",
-            "/swagger-ui/**",
-            "/v3/api-docs/**",
-            "/health"
-        )
-        return permitAllPaths.any { AntPathMatcher().match(it, path) }
     }
 }
