@@ -28,6 +28,8 @@ dependencies {
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
 	implementation("com.google.firebase:firebase-admin:9.2.0")
 	runtimeOnly("com.mysql:mysql-connector-j")
+	implementation("org.springframework.boot:spring-boot-starter-validation")
+	implementation("org.hibernate.validator:hibernate-validator:8.0.1.Final")
 
 	// test
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
@@ -42,7 +44,7 @@ dependencies {
 	implementation("io.jsonwebtoken:jjwt-jackson:0.11.5")
 
 	// swagger
-	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.2")
+	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0")
 }
 
 kotlin {

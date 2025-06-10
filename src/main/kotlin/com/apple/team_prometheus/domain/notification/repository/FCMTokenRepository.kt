@@ -10,6 +10,8 @@ interface FCMTokenRepository: JpaRepository<FCMToken, Long> {
 
     fun findByUserAndToken(user: AuthUser, token: String): FCMToken?
 
+    fun existsByUserAndToken(user: AuthUser, token: String): Boolean
+
     fun deleteByToken(token: String) // 추가
 
     fun findByToken(token: String): FCMToken? // 추가

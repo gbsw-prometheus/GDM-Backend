@@ -1,5 +1,7 @@
-package com.apple.team_prometheus.global.jwt
+package com.apple.team_prometheus.global.jwt.filter
 
+import com.apple.team_prometheus.global.jwt.repository.JwtRepository
+import com.apple.team_prometheus.global.jwt.TokenProvider
 import io.jsonwebtoken.ExpiredJwtException
 import io.jsonwebtoken.JwtException
 import io.jsonwebtoken.security.SignatureException
@@ -10,9 +12,9 @@ import jakarta.servlet.http.HttpServletResponse
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Component
+import org.springframework.util.AntPathMatcher
 import org.springframework.web.filter.OncePerRequestFilter
 import java.io.IOException
-
 
 @Component
 class TokenAuthenticationFilter(
@@ -27,6 +29,14 @@ class TokenAuthenticationFilter(
         filterChain: FilterChain
     ) {
 
+        println(request.requestURI)
+
+        if (isPermitAllPath(request.requestURI)) {
+            println("TokenAuthenticationFilter: Permit all path - ${request.requestURI}")
+            filterChain.doFilter(request, response)
+            return
+        }
+
         val COOKIE_NAME = "accessToken"
 
         val cookies = request.cookies
@@ -37,6 +47,7 @@ class TokenAuthenticationFilter(
             ?.value
 
         println("TokenAuthenticationFilter: Processing ${request.requestURI}")
+        println("NEW")
         println("Extracted Token from Cookie: $token")
         println("TokenAuthenticationFilter: Processing ${request.requestURI}")
         println("Extracted Token: $token")
@@ -76,13 +87,16 @@ class TokenAuthenticationFilter(
         }
     }
 
-    private fun getAccessToken(authorizationHeader: String?): String? {
-        val PREFIX = "Bearer "
-
-        return if (authorizationHeader != null && authorizationHeader.startsWith(PREFIX)) {
-            authorizationHeader.substring(PREFIX.length)
-        } else {
-            null
-        }
+    private fun isPermitAllPath(path: String): Boolean {
+        val permitAllPaths = listOf(
+            "/wlstmd",
+            "/auth/login",
+            "/auth/join",
+            "/auth/login/token",
+            "/swagger-ui/**",
+            "/v3/api-docs/**",
+            "/health"
+        )
+        return permitAllPaths.any { AntPathMatcher().match(it, path) }
     }
 }

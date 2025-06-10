@@ -1,5 +1,6 @@
-package com.apple.team_prometheus.global.jwt
+package com.apple.team_prometheus.global.jwt.filter
 
+import com.apple.team_prometheus.global.jwt.dto.TokenErrorResponse
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.jsonwebtoken.JwtException
 import jakarta.servlet.FilterChain

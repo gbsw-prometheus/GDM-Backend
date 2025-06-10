@@ -1,4 +1,4 @@
-package com.apple.team_prometheus.global.jwt
+package com.apple.team_prometheus.global.jwt.dto
 
 import com.fasterxml.jackson.annotation.JsonIgnore
 

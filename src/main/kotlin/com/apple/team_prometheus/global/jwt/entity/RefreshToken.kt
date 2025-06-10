@@ -1,4 +1,4 @@
-package com.apple.team_prometheus.global.jwt
+package com.apple.team_prometheus.global.jwt.entity
 
 import jakarta.persistence.Column
 import jakarta.persistence.Entity

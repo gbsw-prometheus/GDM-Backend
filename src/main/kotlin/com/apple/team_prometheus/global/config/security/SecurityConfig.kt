@@ -1,10 +1,11 @@
 package com.apple.team_prometheus.global.config.security
 
-import com.apple.team_prometheus.global.jwt.TokenAuthenticationFilter
-import com.apple.team_prometheus.global.jwt.TokenExceptionFilter
+import com.apple.team_prometheus.global.jwt.filter.TokenAuthenticationFilter
+import com.apple.team_prometheus.global.jwt.filter.TokenExceptionFilter
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer
 import org.springframework.security.config.annotation.web.configurers.*
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.crypto.password.PasswordEncoder
@@ -37,12 +38,14 @@ class SecurityConfig(
                         AntPathRequestMatcher("/auth/join"),
                         AntPathRequestMatcher("/auth/login"),
                         AntPathRequestMatcher("/auth/login/token"),
-                        AntPathRequestMatcher("/swagger-ui.html"),
+                        AntPathRequestMatcher("/wlstmd"),
+                        AntPathRequestMatcher("/api/docs"),
+                        AntPathRequestMatcher("/api/docs/**"),
                         AntPathRequestMatcher("/swagger-ui/**"),
                         AntPathRequestMatcher("/v3/api-docs/**"),
-                        AntPathRequestMatcher("/health")
+                        AntPathRequestMatcher("/health"),
+                        AntPathRequestMatcher("/error")
                     ).permitAll()
-                    .anyRequest().authenticated()
             }
             .addFilterBefore(tokenAuthenticationFilter, UsernamePasswordAuthenticationFilter::class.java)
             .addFilterBefore(tokenExceptionFilter, TokenAuthenticationFilter::class.java)
@@ -52,5 +55,17 @@ class SecurityConfig(
     @Bean
     fun passwordEncoder(): PasswordEncoder{
         return BCryptPasswordEncoder()
+    }
+
+    @Bean
+    fun webSecurityCustomizer(): WebSecurityCustomizer {
+        return WebSecurityCustomizer { web ->
+            web.ignoring().requestMatchers(
+                AntPathRequestMatcher("/swagger-ui/**"),
+                AntPathRequestMatcher("/v3/api-docs/**"),
+                AntPathRequestMatcher("/swagger-resources/**"),
+                AntPathRequestMatcher("/error"),
+            )
+        }
     }
 }

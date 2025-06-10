@@ -10,6 +10,8 @@ services:
       - "8080:8080"
     environment:
       - SPRING_PROFILES_ACTIVE=prod
+      - SERVER_ADDRESS=0.0.0.0
+      - SERVER_PORT=8080
     env_file:
       - .env
     volumes:
@@ -26,6 +28,8 @@ services:
     networks:
       - app-network
     restart: unless-stopped
+#    volumes:
+#      - C:\ProgramData\MySQL\MySQL Server 8.0\Data:/var/lib/mysql
     ports:
       - "3306:3306"
 
