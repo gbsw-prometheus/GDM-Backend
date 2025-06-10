@@ -45,7 +45,8 @@ class SecurityConfig(
                         AntPathRequestMatcher("/swagger-ui/**"),
                         AntPathRequestMatcher("/v3/api-docs/**"),
                         AntPathRequestMatcher("/health"),
-                        AntPathRequestMatcher("/error")
+                        AntPathRequestMatcher("/error"),
+                        AntPathRequestMatcher("/api/meals/**"),
                     ).permitAll()
             }
             .addFilterBefore(tokenAuthenticationFilter, UsernamePasswordAuthenticationFilter::class.java)
