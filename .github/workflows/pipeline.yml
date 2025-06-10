@@ -48,6 +48,7 @@ jobs:
         run: sudo docker rm -f gdm-server || true
       - name: Run Docker container
         env:
+          NICE_API_KEY: ${{secrets.NICE_API_KEY}}
           DB_URL: ${{secrets.DB_URL}}
           DB_USERNAME: ${{secrets.DB_USERNAME}}
           DB_PASSWORD: ${{secrets.DB_PASSWORD}}
@@ -58,6 +59,7 @@ jobs:
           FIREBASE_KEY_PATH: /app/firebaseKey/firebase-service-account.json
         run: |
           sudo docker run -d \
+            -e NICE_API_KEY=$NICE_API_KEY \
             -e DB_URL=$DB_URL \
             -e DB_USERNAME=$DB_USERNAME \
             -e DB_PASSWORD=$DB_PASSWORD \
