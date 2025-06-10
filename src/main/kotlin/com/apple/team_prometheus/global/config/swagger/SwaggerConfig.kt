@@ -18,7 +18,7 @@ class SwaggerConfig {
 
     private fun info(): Info {
         return Info()
-            .title("유유진진승승 API")
+            .title("유유 카와이 진진 승승 API")
             .description("유진승과 성홍제를 위한 API 문서입니다.")
             .version("1.0")
     }
