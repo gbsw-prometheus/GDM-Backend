@@ -9,4 +9,5 @@ import org.springframework.stereotype.Repository
 @Repository
 interface JwtRepository: JpaRepository<RefreshToken, Long> {
 
+    fun deleteByRefreshToken(refreshToken: String)
 }

@@ -26,6 +26,20 @@ class SecurityConfig(
         httpSecurity
             .httpBasic{ it.disable() }
             .csrf{ it.disable() }
+            .logout { logout ->
+                logout.logoutUrl("/api/auth/logout")
+                    .addLogoutHandler { request, response, _ ->
+                        request.cookies?.forEach { cookie ->
+                            if (cookie.name == "refreshToken") {
+                                cookie.apply {
+                                    maxAge = 0
+                                    value = ""
+                                }
+                                response.addCookie(cookie)
+                            }
+                        }
+                    }
+            }
             .authorizeHttpRequests { auth ->
 
                 auth
