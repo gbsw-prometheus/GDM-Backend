@@ -37,6 +37,10 @@ class FCMTokenService(
         }
     }
 
+    fun deleteToken(token: String) {
+        fcmTokenRepository.deleteByToken(token)
+    }
+
     fun getAllFCMTokens(): List<String> {
         return fcmTokenRepository.findAll()
             .map {

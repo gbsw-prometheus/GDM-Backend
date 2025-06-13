@@ -2,6 +2,7 @@ package com.apple.team_prometheus.global.config.security
 
 import com.apple.team_prometheus.global.jwt.filter.TokenAuthenticationFilter
 import com.apple.team_prometheus.global.jwt.filter.TokenExceptionFilter
+import com.apple.team_prometheus.global.jwt.repository.JwtRepository
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
@@ -17,7 +18,8 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher
 @Configuration
 class SecurityConfig(
     private val tokenAuthenticationFilter: TokenAuthenticationFilter,
-    private val tokenExceptionFilter: TokenExceptionFilter
+    private val tokenExceptionFilter: TokenExceptionFilter,
+    private val jwtRepository: JwtRepository
 ) {
 
     @Bean
@@ -26,16 +28,36 @@ class SecurityConfig(
         httpSecurity
             .httpBasic{ it.disable() }
             .csrf{ it.disable() }
+            .logout { logout ->
+                logout.logoutUrl("/api/auth/logout")
+                    .addLogoutHandler { request, response, _ ->
+                        request.cookies?.forEach { cookie ->
+                            if (cookie.name == "refreshToken") {
+                                cookie.apply {
+                                    maxAge = 0
+                                    value = ""
+                                }
+                                response.addCookie(cookie)
+                                // DB에서 RefreshToken 삭제
+                                val refreshToken = cookie.value
+                                if (refreshToken.isNotEmpty()) {
+                                    jwtRepository.deleteByRefreshToken(refreshToken)
+                                }
+                            }
+                        }
+                    }
+            }
             .authorizeHttpRequests { auth ->
 
                 auth
                     .requestMatchers(
-                        AntPathRequestMatcher("/api/auth/join"),
+//                        AntPathRequestMatcher("/api/auth/join"),
                         AntPathRequestMatcher("/api/going/**"),
                         AntPathRequestMatcher("/api/attendance/no-attendance"),
                         AntPathRequestMatcher("/api/notifications/**"),
                     ).hasRole("TEACHER")
                     .requestMatchers(
+                        AntPathRequestMatcher("/api/auth/join"),
                         AntPathRequestMatcher("/api/auth/login"),
                         AntPathRequestMatcher("/api/auth/login/token"),
                         AntPathRequestMatcher("/wlstmd"),
