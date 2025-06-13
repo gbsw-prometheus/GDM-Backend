@@ -33,11 +33,13 @@ class TokenAuthenticationFilter(
 
         val cookies = request.cookies
 
+
         val token = cookies?.firstOrNull {
             it.name == COOKIE_NAME
         }
             ?.value
 
+        println(token)
 
         try {
             if (token != null) {

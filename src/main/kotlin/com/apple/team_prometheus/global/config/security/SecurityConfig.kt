@@ -57,7 +57,11 @@ class SecurityConfig(
                         AntPathRequestMatcher("/api/notifications/**"),
                     ).hasRole("TEACHER")
                     .requestMatchers(
-                        AntPathRequestMatcher("/api/auth/join"),
+                        AntPathRequestMatcher("/api/meals/daily"),
+                        AntPathRequestMatcher("/api/attendance/check"),
+                        AntPathRequestMatcher("/api/going/registration"),
+                    ).authenticated()
+                    .requestMatchers(
                         AntPathRequestMatcher("/api/auth/login"),
                         AntPathRequestMatcher("/api/auth/login/token"),
                         AntPathRequestMatcher("/wlstmd"),
