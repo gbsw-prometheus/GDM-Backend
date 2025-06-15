@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.util.UriBuilder
 import org.threeten.bp.LocalDate
+import reactor.core.publisher.Mono
 
 
 @Service
@@ -25,10 +26,9 @@ class MealService(
     private final val SD_SCHUL_CODE = "8750829"
 
     fun getMealData(): MealDto.Response {
-
         val date = LocalDate.now().toString().replace("-", "")
 
-        val response =  webClient.get()
+        val response = webClient.get()
             .uri { uriBuilder: UriBuilder ->
                 uriBuilder
                     .path("/hub/mealServiceDietInfo")
@@ -40,24 +40,41 @@ class MealService(
                     .build()
             }
             .retrieve()
-            .onStatus({ it.isError }) { response ->
-                throw RuntimeException("API 호출 실패: ${response.statusCode()}")
+            .onStatus({ it.isError }) { res ->
+                res.bodyToMono(String::class.java)
+                    .flatMap {
+                        Mono.error(
+                            RuntimeException("API 호출 실패: ${res.statusCode()}, body: $it")
+                        )
+                    }
             }
             .bodyToMono(MealDto.Response::class.java)
-            .block() ?: throw IllegalStateException("Failed to fetch meal data")
+            .switchIfEmpty(
+                Mono.error(
+                    Exceptions(errorCode = ErrorCode.MEAL_NOT_FOUND)
+                )
+            )
+            .block() ?: throw Exceptions(errorCode = ErrorCode.MEAL_NOT_FOUND)
 
-        val filteredResponse = response.mealServiceDietInfo.filter {
+        val filteredInfo = response.mealServiceDietInfo?.filter {
             !it.row.isNullOrEmpty()
         }
 
-        if (filteredResponse.isEmpty()) {
+        if (filteredInfo != null) {
+            if (filteredInfo.isEmpty()) {
+                throw Exceptions(
+                    errorCode = ErrorCode.MEAL_NOT_FOUND
+                )
+            }
+        } else {
             throw Exceptions(
-                errorCode = ErrorCode.MEAL_NOT_FOUND,
+                errorCode = ErrorCode.MEAL_NOT_FOUND
             )
         }
 
         return MealDto.Response(
-            mealServiceDietInfo = filteredResponse
+            mealServiceDietInfo = filteredInfo
         )
     }
+
 }
