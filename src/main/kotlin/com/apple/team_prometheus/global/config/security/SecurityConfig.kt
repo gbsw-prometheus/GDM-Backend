@@ -51,7 +51,7 @@ class SecurityConfig(
 
                 auth
                     .requestMatchers(
-//                        AntPathRequestMatcher("/api/auth/join"),
+                        AntPathRequestMatcher("/api/auth/join"),
                         AntPathRequestMatcher("/api/going/**"),
                         AntPathRequestMatcher("/api/attendance/no-attendance"),
                         AntPathRequestMatcher("/api/notifications/**"),
