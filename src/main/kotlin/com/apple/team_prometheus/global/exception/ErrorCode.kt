@@ -22,6 +22,7 @@ enum class ErrorCode(val httpStatus: HttpStatus, val errorMessage: String) {
     // Status 404
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "유저를 찾을 수 없음"),
     GOING_NOT_FOUND(HttpStatus.NOT_FOUND, "신청한 유저를 찾을 수 없음"),
+    MEAL_NOT_FOUND(HttpStatus.NOT_FOUND, "급식 정보를 찾을 수 없음"),
 
     // Status 409
     DUPLICATED(HttpStatus.CONFLICT, "이미 있는 유저 정보"),
