@@ -1,6 +1,8 @@
 package com.apple.team_prometheus.domain.meal.service
 
 import com.apple.team_prometheus.domain.meal.dto.MealDto
+import com.apple.team_prometheus.global.exception.ErrorCode
+import com.apple.team_prometheus.global.exception.Exceptions
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.WebClient
@@ -46,6 +48,12 @@ class MealService(
 
         val filteredResponse = response.mealServiceDietInfo.filter {
             !it.row.isNullOrEmpty()
+        }
+
+        if (filteredResponse.isEmpty()) {
+            throw Exceptions(
+                errorCode = ErrorCode.MEAL_NOT_FOUND,
+            )
         }
 
         return MealDto.Response(

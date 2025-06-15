@@ -43,6 +43,21 @@ class AuthService(
         joinDto: AuthJoinDto.Request
     ): AuthJoinDto.Response {
 
+        // 중복된 이름과 생년월일로 사용자 조회
+        val existingUser = authRepository.findByBirthYearAndName(
+            birth = LocalDate.parse(
+                joinDto.birth,
+                DateTimeFormatter.ofPattern("yyyy/MM/dd")
+            ),
+            name = joinDto.name
+        )
+
+        if (existingUser.isPresent) {
+            throw Exceptions(
+                errorCode = ErrorCode.DUPLICATED,
+            )
+        }
+
 
         val newUser = AuthUser(
            password = passwordEncoder.encode(joinDto.password),
