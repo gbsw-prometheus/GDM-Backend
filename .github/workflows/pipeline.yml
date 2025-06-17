@@ -45,7 +45,7 @@ jobs:
       - name: Pull Docker image
         run: sudo docker pull jinseung0327/gdm-server:latest
       - name: Delete old Docker container
-        run: sudo docker rm -f gdm-server || true
+        run: sudo docker system prune -a -f --volumes && sudo docker rm -f gdm-server || true
       - name: Run Docker container
         env:
           NICE_API_KEY: ${{secrets.NICE_API_KEY}}
