@@ -50,6 +50,7 @@ firebaseKey/
 
 .gitignore
 
+deploy.bat
 
 ### Docker ###
 Dockerfile

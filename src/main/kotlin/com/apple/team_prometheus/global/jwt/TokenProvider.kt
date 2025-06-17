@@ -36,7 +36,7 @@ class TokenProvider(private val jwtProperties: JwtProperties) {
             .setIssuer(jwtProperties.issuer)
             .setIssuedAt(now)
             .setExpiration(expiry)
-            .setSubject(user.name)
+            .setSubject(user.birth.toString() + " " + user.name)
             .claim("role", user.role.getAuthority())
             .claim("type", if (isAccessToken) "Access" else "Refresh")
             .claim("id", user.id)

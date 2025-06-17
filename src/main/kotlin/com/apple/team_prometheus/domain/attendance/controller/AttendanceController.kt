@@ -6,6 +6,7 @@ import com.apple.team_prometheus.domain.attendance.entity.NoAttendance
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.http.ResponseEntity
+import org.springframework.security.core.Authentication
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -23,8 +24,13 @@ class AttendanceController(
     @PostMapping(value = ["/check"])
     @Operation(summary = "출석 체크")
     fun checkAttendance(
-        @RequestBody request: AttendanceDto.Request
+        authentication: Authentication
     ): ResponseEntity<AttendanceDto.Response> {
+
+        val request = AttendanceDto.Request(
+            birth = authentication.name.split(" ")[0],
+            name = authentication.name.split(" ")[1]
+        )
 
         return ResponseEntity.ok(
             attendanceService.checkAttendance(request)
