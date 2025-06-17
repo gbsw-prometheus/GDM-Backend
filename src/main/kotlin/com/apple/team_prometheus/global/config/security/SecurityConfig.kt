@@ -58,11 +58,6 @@ class SecurityConfig(
                         AntPathRequestMatcher("/api/auth/users"),
                     ).hasRole("TEACHER")
                     .requestMatchers(
-                        AntPathRequestMatcher("/api/meals/daily"),
-                        AntPathRequestMatcher("/api/attendance/check"),
-                        AntPathRequestMatcher("/api/going/registration"),
-                    ).authenticated()
-                    .requestMatchers(
                         AntPathRequestMatcher("/api/auth/login"),
                         AntPathRequestMatcher("/api/auth/login/token"),
                         AntPathRequestMatcher("/wlstmd"),
@@ -73,6 +68,7 @@ class SecurityConfig(
                         AntPathRequestMatcher("/health"),
                         AntPathRequestMatcher("/error"),
                     ).permitAll()
+                    .anyRequest().authenticated()
             }
             .addFilterBefore(tokenAuthenticationFilter, UsernamePasswordAuthenticationFilter::class.java)
             .addFilterBefore(tokenExceptionFilter, TokenAuthenticationFilter::class.java)

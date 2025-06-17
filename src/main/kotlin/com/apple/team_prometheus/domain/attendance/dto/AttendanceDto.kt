@@ -18,6 +18,5 @@ class AttendanceDto {
     data class Request(
         val birth: String,
         val name: String,
-        val yearOfAdmission: Int
     )
 }
