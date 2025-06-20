@@ -1,6 +1,7 @@
 package com.apple.team_prometheus.domain.going.entity
 
 import com.apple.team_prometheus.domain.auth.entity.AuthUser
+import com.fasterxml.jackson.annotation.JsonIgnore
 import jakarta.persistence.*
 import java.time.LocalDate
 
@@ -11,6 +12,8 @@ data class GoingApply(
     val id: Long = 0L,
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "users_id", nullable = false)
+    @JsonIgnore
     val user: AuthUser,
 
     @Column(nullable = false)

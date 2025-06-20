@@ -119,6 +119,7 @@ class AuthController(val authService: AuthService) {
         authentication: Authentication
     ): ResponseEntity<AuthUser> {
 
+        println(authentication)
         return ResponseEntity.ok(
             authService.getProfile(
                 authentication.name.split(" ")[0], // birth

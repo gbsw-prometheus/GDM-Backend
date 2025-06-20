@@ -1,6 +1,7 @@
 package com.apple.team_prometheus.domain.attendance.entity
 
 import com.apple.team_prometheus.domain.auth.entity.AuthUser
+import com.fasterxml.jackson.annotation.JsonIgnore
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.GeneratedValue
@@ -19,6 +20,7 @@ data class NoAttendance (
 
     @ManyToOne
     @JoinColumn(name = "no_attendance_student", nullable = false)
+    @JsonIgnore
     val student: AuthUser,
 
     @Column(nullable = false)

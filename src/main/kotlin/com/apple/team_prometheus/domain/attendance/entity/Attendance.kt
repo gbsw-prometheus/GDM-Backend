@@ -1,6 +1,7 @@
 package com.apple.team_prometheus.domain.attendance.entity
 
 import com.apple.team_prometheus.domain.auth.entity.AuthUser
+import com.fasterxml.jackson.annotation.JsonIgnore
 import jakarta.persistence.*
 import java.time.LocalDateTime
 
@@ -13,6 +14,7 @@ data class Attendance(
 
     @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "users_id", nullable = false)
+    @JsonIgnore
     val user: AuthUser?,
 
     var checkTime: LocalDateTime? = null,
