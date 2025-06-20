@@ -16,8 +16,13 @@ import org.springframework.web.bind.annotation.RestControllerAdvice
 
 @RestControllerAdvice(
     annotations = [RestController::class],
-    basePackageClasses = [AuthController::class, MealController::class, NotificationController::class,
-        AttendanceController::class, GoingController::class]
+    basePackageClasses = [
+        AuthController::class,
+        MealController::class,
+        NotificationController::class,
+        AttendanceController::class,
+        GoingController::class
+    ]
 )
 class GlobalExceptionHandler{
 

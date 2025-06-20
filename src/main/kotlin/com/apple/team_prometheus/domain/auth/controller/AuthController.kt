@@ -11,6 +11,7 @@ import jakarta.servlet.http.Cookie
 import jakarta.servlet.http.HttpServletResponse
 import jakarta.validation.Valid
 import org.springframework.http.ResponseEntity
+import org.springframework.security.core.Authentication
 import org.springframework.web.bind.annotation.CookieValue
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
@@ -111,4 +112,18 @@ class AuthController(val authService: AuthService) {
             authService.findAllUsers()
         )
     }
+
+    @GetMapping(value = ["/user"])
+    @Operation(summary = "현재 사용자 조회")
+    fun getProfile(
+        authentication: Authentication
+    ): ResponseEntity<AuthUser> {
+
+        return ResponseEntity.ok(
+            authService.getProfile(
+                authentication.name.split(" ")[0], // birth
+                authentication.name.split(" ")[1] // name
+            )
+        )
+
 }

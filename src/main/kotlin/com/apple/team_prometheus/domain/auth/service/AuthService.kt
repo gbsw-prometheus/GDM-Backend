@@ -35,6 +35,21 @@ class AuthService(
     private val fcmTokenService: FCMTokenService
 ) {
 
+    fun getProfile(
+        birth: String,
+        name: String
+    ): AuthUser {
+        return authRepository.findByBirthYearAndName(
+            birth = LocalDate.parse(
+                birth,
+                DateTimeFormatter.ofPattern("yyyy/MM/dd")
+            ),
+            name = name
+        ).orElseThrow {
+            Exceptions(errorCode = ErrorCode.USER_NOT_FOUND)
+        }
+    }
+
     fun findAllUsers(): List<AuthUser?> {
         return authRepository.findAllExcludingGoingUsers()
     }
