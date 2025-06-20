@@ -42,7 +42,7 @@ class AuthService(
         return authRepository.findByBirthYearAndName(
             birth = LocalDate.parse(
                 birth,
-                DateTimeFormatter.ofPattern("yyyy/MM/dd")
+                DateTimeFormatter.ofPattern("yyyy-MM-dd")
             ),
             name = name
         ).orElseThrow {
