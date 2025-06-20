@@ -125,5 +125,5 @@ class AuthController(val authService: AuthService) {
                 authentication.name.split(" ")[1] // name
             )
         )
-
+    }
 }
