@@ -1,6 +1,7 @@
 package com.apple.team_prometheus.domain.auth.controller
 
 import com.apple.team_prometheus.domain.auth.dto.AuthJoinDto
+import com.apple.team_prometheus.domain.auth.dto.AuthListDto
 import com.apple.team_prometheus.domain.auth.dto.AuthLoginDto
 import com.apple.team_prometheus.domain.auth.service.AuthService
 import com.apple.team_prometheus.domain.auth.entity.AuthUser
@@ -107,7 +108,7 @@ class AuthController(val authService: AuthService) {
 
     @GetMapping(value = ["/users"])
     @Operation(summary = "모든 사용자 조회")
-    fun findAllUsers(): ResponseEntity<List<AuthUser?>> {
+    fun findAllUsers(): ResponseEntity<List<AuthListDto.Response>> {
         return ResponseEntity.ok(
             authService.findAllUsers()
         )
@@ -117,7 +118,7 @@ class AuthController(val authService: AuthService) {
     @Operation(summary = "현재 사용자 조회")
     fun getProfile(
         authentication: Authentication
-    ): ResponseEntity<AuthUser> {
+    ): ResponseEntity<AuthListDto.Response> {
 
         println(authentication)
         return ResponseEntity.ok(
