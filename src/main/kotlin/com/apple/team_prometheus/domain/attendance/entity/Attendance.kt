@@ -14,7 +14,6 @@ data class Attendance(
 
     @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "users_id", nullable = false)
-    @JsonIgnore
     val user: AuthUser?,
 
     var checkTime: LocalDateTime? = null,

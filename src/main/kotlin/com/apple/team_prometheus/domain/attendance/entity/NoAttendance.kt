@@ -20,7 +20,6 @@ data class NoAttendance (
 
     @ManyToOne
     @JoinColumn(name = "no_attendance_student", nullable = false)
-    @JsonIgnore
     val student: AuthUser,
 
     @Column(nullable = false)

@@ -37,10 +37,10 @@ data class AuthUser(
     @OneToOne(fetch = FetchType.LAZY, cascade = [CascadeType.ALL])
     var attendance: Attendance? = null,
 
-    @OneToMany(fetch = FetchType.EAGER)
+    @OneToMany(fetch = FetchType.LAZY, cascade = [CascadeType.ALL])
     var noAttendance: List<NoAttendance>,
 
-    @OneToMany(fetch = FetchType.EAGER)
+    @OneToMany(fetch = FetchType.LAZY, cascade = [CascadeType.ALL])
     var goingApply: List<GoingApply> = emptyList(),
 
     @Column(nullable = false, name = "birth_year")
