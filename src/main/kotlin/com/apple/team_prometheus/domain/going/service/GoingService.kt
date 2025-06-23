@@ -57,8 +57,8 @@ class GoingService(
     }
 
     fun registrationGoing(request: GoingDto.Request): GoingDto.Response {
-        if (request.outDateTime.isBefore(java.time.LocalDate.now()) ||
-            request.inDateTime.isBefore(java.time.LocalDate.now()) ||
+        if (request.outDateTime.isBefore(LocalDate.now()) ||
+            request.inDateTime.isBefore(LocalDate.now()) ||
             request.outDateTime.isBefore(request.inDateTime)) {
 
             throw Exceptions(
@@ -66,15 +66,17 @@ class GoingService(
             )
         }
 
-        val student: AuthUser? = authRepository.findByBirthYearAndName(
-            birth = LocalDate.parse(request.userBirth),
-            name = request.userName
-        )
-            .orElseThrow {
-                Exceptions(
-                    ErrorCode.USER_NOT_FOUND
-                )
-            }
+        val student: AuthUser? = request.userName?.let {
+            authRepository.findByBirthYearAndName(
+                birth = LocalDate.parse(request.userBirth),
+                name = it
+            )
+                .orElseThrow {
+                    Exceptions(
+                        ErrorCode.USER_NOT_FOUND
+                    )
+                }
+        }
 
         val goingApply: GoingApply = GoingApply(
             user = student!!,

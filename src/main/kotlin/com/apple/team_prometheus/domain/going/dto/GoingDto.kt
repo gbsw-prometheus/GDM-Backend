@@ -10,8 +10,8 @@ class GoingDto {
 
     @Schema(name = "GoingRequest")
     data class Request(
-        var userName: String,
-        var userBirth: String,
+        var userName: String?,
+        var userBirth: String?,
         val outDateTime: LocalDate,
         val inDateTime: LocalDate,
         val title: String,
