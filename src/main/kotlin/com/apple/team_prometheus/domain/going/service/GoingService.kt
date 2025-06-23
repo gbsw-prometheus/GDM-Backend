@@ -8,6 +8,7 @@ import com.apple.team_prometheus.domain.going.entity.GoingApply
 import com.apple.team_prometheus.global.exception.ErrorCode
 import com.apple.team_prometheus.global.exception.Exceptions
 import org.springframework.stereotype.Service
+import java.time.LocalDate
 
 
 @Service
@@ -65,7 +66,10 @@ class GoingService(
             )
         }
 
-        val student: AuthUser? = authRepository.findById(request.userId)
+        val student: AuthUser? = authRepository.findByBirthYearAndName(
+            birth = LocalDate.parse(request.userBirth),
+            name = request.userName
+        )
             .orElseThrow {
                 Exceptions(
                     ErrorCode.USER_NOT_FOUND

@@ -3,8 +3,11 @@ package com.apple.team_prometheus.domain.going.controller
 import com.apple.team_prometheus.domain.going.dto.GoingDto
 import com.apple.team_prometheus.domain.going.service.GoingService
 import com.apple.team_prometheus.domain.going.entity.GoingApply
+import io.jsonwebtoken.Jwt
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
+import org.springframework.security.core.Authentication
+import org.springframework.security.core.userdetails.User
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -39,8 +42,12 @@ class GoingController(
     @PostMapping(value = ["/registration"])
     @Operation(summary = "외출/외박 신청")
     fun registrationGoing(
-        request: GoingDto.Request
+        request: GoingDto.Request,
+        authentication: Authentication
     ): GoingDto.Response {
+
+        request.userBirth = authentication.name.split(" ")[0]
+        request.userName = authentication.name.split(" ")[1]
 
         return goingService.registrationGoing(request)
     }
