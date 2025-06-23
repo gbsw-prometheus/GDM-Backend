@@ -12,7 +12,7 @@ data class Attendance(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0L,
 
-    @OneToOne(fetch = FetchType.EAGER)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "users_id", nullable = false)
     val user: AuthUser?,
 

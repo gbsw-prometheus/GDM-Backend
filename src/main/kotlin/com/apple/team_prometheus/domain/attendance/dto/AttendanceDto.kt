@@ -19,4 +19,14 @@ class AttendanceDto {
         val birth: String,
         val name: String,
     )
+
+    @Schema(name = "NoAttendanceListResponse")
+    data class NoAttendanceListResponse(
+        val attendanceTime: LocalDateTime,
+    )
+
+    @Schema(name = "AttendanceListResponse")
+    data class AttendanceListResponse(
+        val checkTime: LocalDateTime,
+    )
 }

@@ -30,4 +30,14 @@ class GoingDto {
         val user: AuthUser,
         val going: Boolean
     )
+
+    @Schema(name = "ProfileGoingResponse")
+    data class ProfileResponse(
+        val id: Long,
+        val going: Boolean,
+        val outDateTime: LocalDate,
+        val inDateTime: LocalDate,
+    )
+
+
 }

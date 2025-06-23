@@ -13,7 +13,6 @@ data class GoingApply(
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "users_id", nullable = false)
-    @JsonIgnore
     val user: AuthUser,
 
     @Column(nullable = false)

@@ -1,12 +1,15 @@
 package com.apple.team_prometheus.domain.auth.service
 
+import com.apple.team_prometheus.domain.attendance.dto.AttendanceDto
 import com.apple.team_prometheus.domain.attendance.entity.Attendance
 import com.apple.team_prometheus.domain.attendance.entity.Status
 import com.apple.team_prometheus.domain.auth.entity.Role
 import com.apple.team_prometheus.domain.auth.dto.AuthJoinDto
+import com.apple.team_prometheus.domain.auth.dto.AuthListDto
 import com.apple.team_prometheus.domain.auth.dto.AuthLoginDto
 import com.apple.team_prometheus.domain.auth.entity.AuthUser
 import com.apple.team_prometheus.domain.auth.repository.AuthRepository
+import com.apple.team_prometheus.domain.going.dto.GoingDto
 import com.apple.team_prometheus.domain.notification.dto.FCM
 import com.apple.team_prometheus.domain.notification.service.FCMTokenService
 import com.apple.team_prometheus.global.exception.ErrorCode
@@ -38,8 +41,8 @@ class AuthService(
     fun getProfile(
         birth: String,
         name: String
-    ): AuthUser {
-        return authRepository.findByBirthYearAndName(
+    ): AuthListDto.Response {
+        val user = authRepository.findByBirthYearAndName(
             birth = LocalDate.parse(
                 birth,
                 DateTimeFormatter.ofPattern("yyyy-MM-dd")
@@ -48,10 +51,70 @@ class AuthService(
         ).orElseThrow {
             Exceptions(errorCode = ErrorCode.USER_NOT_FOUND)
         }
+
+        return AuthListDto.Response(
+            id = user.id,
+            name = user.name,
+            roomNum = user.roomNum,
+            role = user.role,
+            attendance = user.attendance?.let {
+                it.checkTime?.let { it1 ->
+                    AttendanceDto.AttendanceListResponse(
+                        checkTime = it1,
+                    )
+                }
+            },
+            noAttendance = user.noAttendance.map {
+                AttendanceDto.NoAttendanceListResponse(
+                    attendanceTime = it.attendanceTime
+                )
+            },
+            goingApply = user.goingApply.map {
+                GoingDto.ProfileResponse(
+                    id = it.id,
+                    going = it.going,
+                    outDateTime = it.outDateTime,
+                    inDateTime = it.inDateTime
+                )
+            },
+            birth = user.birth,
+            yearOfAdmission = user.yearOfAdmission,
+            isGraduate = user.isGraduate
+        )
     }
 
-    fun findAllUsers(): List<AuthUser?> {
-        return authRepository.findAllExcludingGoingUsers()
+    fun findAllUsers(): List<AuthListDto.Response> {
+        return authRepository.findAllExcludingGoingUsers().map { user ->
+            AuthListDto.Response(
+                id = user?.id ?: 0L,
+                name = user?.name ?: "",
+                roomNum = user?.roomNum,
+                role = user?.role ?: Role.STUDENT,
+                attendance = user?.attendance?.let {
+                    it.checkTime?.let { checkTime ->
+                        AttendanceDto.AttendanceListResponse(
+                            checkTime = checkTime
+                        )
+                    }
+                },
+                noAttendance = user?.noAttendance?.map {
+                    AttendanceDto.NoAttendanceListResponse(
+                        attendanceTime = it.attendanceTime
+                    )
+                } ?: emptyList(),
+                goingApply = user?.goingApply?.map {
+                    GoingDto.ProfileResponse(
+                        id = it.id,
+                        going = it.going,
+                        outDateTime = it.outDateTime,
+                        inDateTime = it.inDateTime
+                    )
+                } ?: emptyList(),
+                birth = user?.birth ?: LocalDate.now(),
+                yearOfAdmission = user?.yearOfAdmission ?: Year.now(),
+                isGraduate = user?.isGraduate ?: false
+            )
+        }
     }
 
     fun userJoin(
