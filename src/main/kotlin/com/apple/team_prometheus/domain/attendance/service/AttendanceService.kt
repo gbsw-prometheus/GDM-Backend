@@ -14,6 +14,7 @@ import com.apple.team_prometheus.global.exception.Exceptions
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.LocalDateTime
 
@@ -42,7 +43,10 @@ class AttendanceService(
         )
 
         val now = LocalDateTime.now()
-        if (now.hour !in listOf(8, 12, 13, 18, 19)) {
+        if (now.hour !in listOf(8, 12, 13, 18, 19) && now.dayOfWeek !in listOf(
+                DayOfWeek.SATURDAY,
+                DayOfWeek.SUNDAY
+            )) {
             throw Exceptions(
                 ErrorCode.NOT_ATTENDANCE_TIME
 
