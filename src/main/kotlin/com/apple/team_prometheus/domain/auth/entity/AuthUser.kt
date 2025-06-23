@@ -35,12 +35,15 @@ data class AuthUser(
     val role: Role,
 
     @OneToOne(fetch = FetchType.LAZY, cascade = [CascadeType.ALL])
+    @JsonIgnore
     var attendance: Attendance? = null,
 
     @OneToMany(fetch = FetchType.LAZY, cascade = [CascadeType.ALL])
+    @JsonIgnore
     var noAttendance: List<NoAttendance>,
 
     @OneToMany(fetch = FetchType.LAZY, cascade = [CascadeType.ALL])
+    @JsonIgnore
     var goingApply: List<GoingApply> = emptyList(),
 
     @Column(nullable = false, name = "birth_year")
