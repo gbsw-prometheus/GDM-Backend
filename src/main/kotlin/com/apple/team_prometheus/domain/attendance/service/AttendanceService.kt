@@ -42,7 +42,7 @@ class AttendanceService(
         )
 
         val now = LocalDateTime.now()
-        if (now.hour !in listOf(8, 12, 18)) {
+        if (now.hour !in listOf(8, 12, 13, 18, 19)) {
             throw Exceptions(
                 ErrorCode.NOT_ATTENDANCE_TIME
 
