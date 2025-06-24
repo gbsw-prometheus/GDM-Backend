@@ -57,9 +57,12 @@ class GoingService(
     }
 
     fun registrationGoing(request: GoingDto.Request): GoingDto.Response {
-        if (request.outDateTime.isBefore(LocalDate.now()) ||
-            request.inDateTime.isBefore(LocalDate.now()) ||
-            request.outDateTime.isBefore(request.inDateTime)) {
+
+
+
+        if (LocalDate.parse(request.outDateTime).isBefore(LocalDate.now()) ||
+            LocalDate.parse(request.inDateTime).isBefore(LocalDate.now()) ||
+            LocalDate.parse(request.outDateTime).isBefore(LocalDate.parse(request.inDateTime))) {
 
             throw Exceptions(
                 ErrorCode.INVALID_DATE_ERROR
@@ -80,8 +83,8 @@ class GoingService(
 
         val goingApply: GoingApply = GoingApply(
             user = student!!,
-            outDateTime = request.outDateTime,
-            inDateTime = request.inDateTime,
+            outDateTime = LocalDate.parse(request.outDateTime),
+            inDateTime = LocalDate.parse(request.inDateTime),
             title = request.title,
             content = request.content
         )

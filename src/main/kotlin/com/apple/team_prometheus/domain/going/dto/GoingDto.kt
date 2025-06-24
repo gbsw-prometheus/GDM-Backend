@@ -12,8 +12,8 @@ class GoingDto {
     data class Request(
         var userName: String?,
         var userBirth: String?,
-        val outDateTime: LocalDate,
-        val inDateTime: LocalDate,
+        val outDateTime: String,
+        val inDateTime: String,
         val title: String,
         val content: String
     )
