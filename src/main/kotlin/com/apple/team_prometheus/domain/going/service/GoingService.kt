@@ -69,6 +69,7 @@ class GoingService(
 
             println(LocalDate.parse(request.outDateTime, dateFormatter))
             println(LocalDate.parse(request.inDateTime, dateFormatter))
+            println(LocalDate.now())
 
             throw Exceptions(
                 ErrorCode.INVALID_DATE_ERROR
