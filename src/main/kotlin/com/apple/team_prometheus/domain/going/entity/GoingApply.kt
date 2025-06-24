@@ -12,7 +12,6 @@ data class GoingApply(
     val id: Long = 0L,
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "users_id", nullable = false)
     val user: AuthUser,
 
     @Column(nullable = false)
