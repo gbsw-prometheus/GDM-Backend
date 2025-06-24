@@ -9,6 +9,7 @@ import com.apple.team_prometheus.global.exception.ErrorCode
 import com.apple.team_prometheus.global.exception.Exceptions
 import org.springframework.stereotype.Service
 import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 
 @Service
@@ -58,11 +59,12 @@ class GoingService(
 
     fun registrationGoing(request: GoingDto.Request): GoingDto.Response {
 
+        val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
 
 
-        if (LocalDate.parse(request.outDateTime).isBefore(LocalDate.now()) ||
-            LocalDate.parse(request.inDateTime).isBefore(LocalDate.now()) ||
-            LocalDate.parse(request.outDateTime).isBefore(LocalDate.parse(request.inDateTime))) {
+        if (LocalDate.parse(request.outDateTime, dateFormatter).isBefore(LocalDate.now()) ||
+            LocalDate.parse(request.inDateTime, dateFormatter).isBefore(LocalDate.now()) ||
+            LocalDate.parse(request.outDateTime, dateFormatter).isBefore(LocalDate.parse(request.inDateTime, dateFormatter))) {
 
             throw Exceptions(
                 ErrorCode.INVALID_DATE_ERROR
