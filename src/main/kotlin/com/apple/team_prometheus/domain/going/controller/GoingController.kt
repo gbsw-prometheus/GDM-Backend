@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.bind.annotation.RequestMapping
 import java.time.LocalDate
@@ -42,7 +43,7 @@ class GoingController(
     @PostMapping(value = ["/registration"])
     @Operation(summary = "외출/외박 신청")
     fun registrationGoing(
-        request: GoingDto.Request,
+        @RequestBody request: GoingDto.Request,
         authentication: Authentication
     ): GoingDto.Response {
 
