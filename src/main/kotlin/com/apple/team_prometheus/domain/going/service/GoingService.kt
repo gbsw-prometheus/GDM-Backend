@@ -76,20 +76,21 @@ class GoingService(
             )
         }
 
-        val student: AuthUser? = request.userName?.let {
+        val student: AuthUser = request.userName?.let {
+
+            val dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+
             authRepository.findByBirthYearAndName(
-                birth = LocalDate.parse(request.userBirth),
+                birth = LocalDate.parse(request.userBirth, dateTimeFormatter),
                 name = it
-            )
-                .orElseThrow {
-                    Exceptions(
-                        ErrorCode.USER_NOT_FOUND
-                    )
-                }
-        }
+            ).orElseThrow {
+                Exceptions(ErrorCode.USER_NOT_FOUND)
+            }
+        } ?: throw Exceptions(ErrorCode.USER_NOT_FOUND)
+
 
         val goingApply: GoingApply = GoingApply(
-            user = student!!,
+            user = student,
             outDateTime = LocalDate.parse(request.outDateTime),
             inDateTime = LocalDate.parse(request.inDateTime),
             title = request.title,
