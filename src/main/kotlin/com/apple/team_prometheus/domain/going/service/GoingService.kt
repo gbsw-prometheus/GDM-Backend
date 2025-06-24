@@ -65,7 +65,7 @@ class GoingService(
 
         if (LocalDate.parse(request.outDateTime, dateFormatter).isBefore(LocalDate.now()) ||
             LocalDate.parse(request.inDateTime, dateFormatter).isBefore(LocalDate.now()) ||
-            LocalDate.parse(request.outDateTime, dateFormatter).isBefore(LocalDate.parse(request.inDateTime, dateFormatter))) {
+            LocalDate.parse(request.inDateTime, dateFormatter).isBefore(LocalDate.parse(request.outDateTime, dateFormatter))) {
 
             println(LocalDate.parse(request.outDateTime, dateFormatter))
             println(LocalDate.parse(request.inDateTime, dateFormatter))
