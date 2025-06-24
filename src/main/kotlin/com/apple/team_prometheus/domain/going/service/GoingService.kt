@@ -61,10 +61,14 @@ class GoingService(
 
         val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
 
+        println(request)
 
         if (LocalDate.parse(request.outDateTime, dateFormatter).isBefore(LocalDate.now()) ||
             LocalDate.parse(request.inDateTime, dateFormatter).isBefore(LocalDate.now()) ||
             LocalDate.parse(request.outDateTime, dateFormatter).isBefore(LocalDate.parse(request.inDateTime, dateFormatter))) {
+
+            println(LocalDate.parse(request.outDateTime, dateFormatter))
+            println(LocalDate.parse(request.inDateTime, dateFormatter))
 
             throw Exceptions(
                 ErrorCode.INVALID_DATE_ERROR
